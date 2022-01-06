@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Clocker</title>
+        <link rel="stylesheet" href="css-index.css">
+        <h1>CLOCKER</h1>
+    </head>
+    <body>
+        <div id="login" class="one">
+            <p class="ll">Logowanie</p>
+            <label id="log">Login: </label><input type="text" id="username" required>
+            <p id='wrongUsername'></p>
+            <label id="log">Hasło: </label><input type="password" id="passwd" required>
+            <p id='wrongPasswd'></p>
+            <div id="wrap">
+            <button type="submit" id="logButton">Zaloguj się</button>
+            </div>
+        </div>
+        <div id='same-line'>       
+        <div id="register">
+            <p class="ll">Załóż konto</p>
+            <label id="reg">Email: </label><input type="text" id="reg_email" required>
+            <p id = 'wrongEmail'></p>
+            <label id="reg">Login: </label><input type="text" id="reg_username" required>
+            <p id = 'wrongRegUser'></p>
+            <label id="reg">Hasło: </label><input type="password" id="reg_passwd" required>
+            <p id = 'wrongPasswd'></p>
+            <label id="reg">Powtórz hasło: </label><input type="password" id="reg_passwd_rep" required>
+            <p id = 'wrongPasswd'></p>        
+            <div id="wrap">
+            <button type="submit" id="regButton">Zarejestruj się</button>
+            </div>
+        </div>
+        <div id="stats" class="one">
+            <p class="ll">Statystyki</p>
+        </div>
+        </div>
+        <div id="desc">
+            <span id = 'descSpan'>Clocker to...</span>
+        </div>
+    </body>
+</html>
