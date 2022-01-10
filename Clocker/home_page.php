@@ -8,8 +8,8 @@ $html = <<<EOT
 <head>
     <meta charset="UTF-8">
     <title>Clocker</title>
-    <script src="/Clocker/js/clocker.js"></script>
-    <link rel="stylesheet" href="/Clocker/css/clocker.css">
+    <script src="/js/clocker.js"></script>
+    <link rel="stylesheet" href="/css/clocker.css">
 </head>
 
 <body onload="getErrorMessage()">

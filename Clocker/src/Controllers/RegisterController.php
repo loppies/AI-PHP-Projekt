@@ -29,13 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if($error != null) {
-        header("Location: /Clocker/home_page.php" . $error);
+        header("Location: /home_page.php" . $error);
     } else {
         if ( !isset($_SESSION['user_login']) ) {
             session_start();
             $_SESSION['user_login'] = $user->getLogin();
         }
 
-        header("Location: /Clocker/user_page.php");
+        header("Location: /user_page.php");
     }
 }

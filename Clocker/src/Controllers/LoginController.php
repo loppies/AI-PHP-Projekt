@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if($error != null) {
-        header("Location: /Clocker/home_page.php" . $error);
+        header("Location: /home_page.php" . $error);
     } else {
         if ( !isset($_SESSION['user_login']) ) {
             session_start();
@@ -31,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($user->getIsAdmin() == true) {
-            header("Location: /Clocker/admin_page.php");
+            header("Location: /admin_page.php");
         } else {
-            header("Location: /Clocker/user_page.php");
+            header("Location: /user_page.php");
         }
     }
 }
