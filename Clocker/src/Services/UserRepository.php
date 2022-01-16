@@ -2,11 +2,11 @@
 
 namespace Clocker\Services;
 
-use Clocker\Entities\User;
-use PDO;
-
+require_once __DIR__ . './PdoConnection.php';
 require_once __DIR__ . '/../Entities/User.php';
-require_once __DIR__ . '/../../cfg/config_db.php';
+
+use PDO;
+use Clocker\Entities\User;
 
 class UserRepository {
     /**
@@ -16,8 +16,7 @@ class UserRepository {
      * @return User|null
      */
     public static function registerUser($userLogin, $password, $email) {
-        global $config;
-        $pdo = new PDO($config['dsn'], $config['username'], $config['password']);
+        $pdo = PdoConnection::getPdoConnection();
 
         $sql = "INSERT INTO users (login, password, email, is_admin) VALUES (:login, :password, :email, :is_admin)";
         $stm = $pdo->prepare($sql);
@@ -30,6 +29,8 @@ class UserRepository {
 
         $user = self::loginUser($userLogin);
 
+        PdoConnection::closePdoConnection($pdo);
+
         return $user;
     }
 
@@ -38,8 +39,7 @@ class UserRepository {
      * @return User|null
      */
     public static function loginUser($userLogin) {
-        global $config;
-        $pdo = new PDO($config['dsn'], $config['username'], $config['password']);
+        $pdo = PdoConnection::getPdoConnection();
 
         $sql = "SELECT * FROM users WHERE login = :userLogin";
         $stm = $pdo->prepare($sql);
@@ -57,6 +57,8 @@ class UserRepository {
             ->setPassword($row['password'])
             ->setEmail($row['email'])
             ->setIsAdmin($row['is_admin']);
+
+        PdoConnection::closePdoConnection($pdo);
 
         return $user;
     }

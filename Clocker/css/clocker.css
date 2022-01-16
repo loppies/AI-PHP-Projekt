@@ -54,7 +54,7 @@ h1{
 
 
 body{
-    background-image: url('/img/back.png');
+    background-image: url('../img/back.png');
     background-size: cover;
     background-position: initial;
 }
