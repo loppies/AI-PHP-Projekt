@@ -135,7 +135,7 @@ function endTask() {
   let h = document.getElementById('hour').innerHTML;
   let m = document.getElementById('minute').innerHTML;
   let s = document.getElementById('second').innerHTML;
-  var seconds = (h * 3600) + (m * 60) + s;
+  var seconds = (parseInt(h) * 3600) + (parseInt(m) * 60) + parseInt(s);
   document.getElementById('seconds_full').value = seconds;
 }
 
