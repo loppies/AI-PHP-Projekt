@@ -1,5 +1,12 @@
 <?php
+require (__DIR__ . "/src/Services/TaskRepository.php");
+require (__DIR__ . "/src/Services/UserRepository.php");
+//require (__DIR__ . "./ErrorBuilder.php");
 
+use Clocker\Services\TaskRepository;
+use Clocker\Services\UserRepository;
+$task_count = TaskRepository::countTask();
+$user_count = UserRepository::countUser();
 $html = <<<EOT
 
 <!DOCTYPE html>
@@ -13,6 +20,19 @@ $html = <<<EOT
 </head>
 
 <body onload="getErrorMessage()">
+<script>
+    window.onload = updateStats;
+   
+    function updateStats()
+    {
+    console.log("$task_count");
+    let tasks = document.getElementById("tasks_stat");
+    tasks.innerHTML = "Ilosc zadan: " + "$task_count";
+    let users = document.getElementById("users_stat");
+    users.innerHTML = "Ilosc uzytkownikow: " + "$user_count";
+    
+    }
+    </script>
     <h1>CLOCKER</h1>
     
     <div id="login" class="one">
@@ -48,6 +68,9 @@ $html = <<<EOT
         </div>
         <div id="stats" class="one">
             <p class="ll">Statystyki</p>
+            <p class="users_stat" id="users_stat">Ilosc uzytkownikow: </p>
+            <p class="tasks_stat" id="tasks_stat">Ilosc zadan: </p>
+            <p class="projects_stat">Ilosc projektow: </p>
         </div>
     </div>
     <div id="desc">

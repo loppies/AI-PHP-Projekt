@@ -62,4 +62,19 @@ class UserRepository {
 
         return $user;
     }
+  
+    public static function countUser() {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT count(*) as counter FROM users";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $count = $stm->fetch(PDO::FETCH_ASSOC);
+
+        if (!$count) {
+            return null;
+        }
+        PdoConnection::closePdoConnection($pdo);
+        return $count["counter"];
+    }
 }

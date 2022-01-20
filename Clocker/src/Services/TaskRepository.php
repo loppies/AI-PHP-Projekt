@@ -43,7 +43,7 @@ class TaskRepository {
 
         return $tasks;
     }
-
+  
     /**
      * @param $taskId
      * @return Task|null
@@ -73,6 +73,21 @@ class TaskRepository {
 
         return $task;
     }
+  
+  public static function countTask() {
+  $pdo = PdoConnection::getPdoConnection();
+
+  $sql = "SELECT count(*) as counter FROM tasks";
+  $stm = $pdo->prepare($sql);
+  $result = $stm->execute();
+  $count = $stm->fetch(PDO::FETCH_ASSOC);
+
+  if (!$count) {
+  return null;
+  }
+  PdoConnection::closePdoConnection($pdo);
+  return $count["counter"];
+  }
 
     /**
      * @param $userId

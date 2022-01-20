@@ -8,6 +8,7 @@ session_start();
 $user_id = $_SESSION['user_id'];
 $projects = TaskRepository::getAllTasks($user_id);
 $tasks = TaskRepository::getAllTasks($user_id);
+//$task_count = TaskRepository::countTask();
 $counter = 0;
 $project_id = array();
 $name = array();
@@ -41,6 +42,7 @@ $html = <<<EOT
     
     <script>
     window.onload = makeDivs;
+   
     function makeDivs()
     {
       var names = JSON.parse('$name_json');
