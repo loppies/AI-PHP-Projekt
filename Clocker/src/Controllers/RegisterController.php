@@ -5,9 +5,7 @@ namespace Clocker\Controllers;
 require (__DIR__ . "/../Services/UserRepository.php");
 require (__DIR__ . "./ErrorBuilder.php");
 
-use Clocker\Entities\User;
 use Clocker\Services\UserRepository;
-use Clocker\Controllers\ErrorBuilder;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST["reg_email"];
@@ -19,12 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = null;
     $errorType = 'registerErrorMessage';
     if($user != null) {
-        $error = ErrorBuilder::buildUrlQuery("Użytkownik o podanym loginie już istnieje!", $errorType);
+        $error = ErrorBuilder::buildUrlQuery("Rejestracja użytkownika zakończona niepowodzeniem!", $errorType);
     } else {
         $user = UserRepository::registerUser($login, $passwd, $email);
 
         if ($user == null) {
-            $error = ErrorBuilder::buildUrlQuery("Nieudana rejestracja użytkowika!", $errorType);
+            $error = ErrorBuilder::buildUrlQuery("Rejestracja użytkownika zakończona niepowodzeniem!", $errorType);
         }
     }
 

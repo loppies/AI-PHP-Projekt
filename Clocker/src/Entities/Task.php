@@ -4,10 +4,11 @@ namespace Clocker\Entities;
 
 class Task {
     protected $id;
+    protected $userId;
+    protected $projectId;
     protected $name;
     protected $start;
     protected $stop;
-    protected $userId;
 
     /**
      * @return mixed
@@ -96,6 +97,24 @@ class Task {
     public function setUserId($userId)
     {
         $this->userId = $userId;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProjectId()
+    {
+        return $this->projectId;
+    }
+
+    /**
+     * @param mixed $projectId
+     * @return Task
+     */
+    public function setProjectId($projectId)
+    {
+        $this->projectId = $projectId;
         return $this;
     }
 }
