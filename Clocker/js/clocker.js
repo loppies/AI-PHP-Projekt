@@ -42,7 +42,7 @@ function reset() {
   minute = 0;
   second = 0;
   millisecond = 0;
-  document.getElementById('hour').innerText = '0r30';
+  document.getElementById('hour').innerText = '00';
   document.getElementById('minute').innerText = '00';
   document.getElementById('second').innerText = '00';
 }
