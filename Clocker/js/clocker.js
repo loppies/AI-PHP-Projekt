@@ -6,6 +6,8 @@ var second = 0;
 var millisecond = 0;
 var cron = 0;
 
+
+
 function timer() {
   if ((millisecond += 10) == 1000) {
     millisecond = 0;
@@ -137,6 +139,51 @@ function endTask() {
   let s = document.getElementById('second').innerHTML;
   var seconds = (parseInt(h) * 3600) + (parseInt(m) * 60) + parseInt(s);
   document.getElementById('seconds_full').value = seconds;
+}
+
+function deleteTask() {
+  var id = this.id.slice(-1);
+  var taskId = document.getElementById('divTaskId' + id);
+  taskId = taskId.innerHTML;
+  console.log(taskId);
+  var taskIdPlace = document.getElementById('delete_id');
+  taskIdPlace.innerHTML = taskId;
+  return taskId;
+}
+
+
+function getCopy(id) {
+  var taskNameCopy = document.getElementById('divNazwa' + id);
+  return taskNameCopy.innerHTML;
+}
+
+function editTask() {
+  var id = this.id.slice(-1);
+  var taskId = document.getElementById('divTaskId' + id);
+  var taskName = document.getElementById('divNazwa' + id);
+  var taskNameCopy = getCopy(id);
+  var editButtons = document.getElementsByClassName("editClass");
+  for (var i = 0; i < editButtons.length; i++) {
+    editButtons[i].disabled = true;
+  }
+  taskId = taskId.innerHTML;
+  taskName.contentEditable = "true";
+  taskName.style.borderStyle = "solid";
+  document.getElementById('edit_id').value = taskId;
+  taskName.addEventListener('dblclick', function () {
+    taskName.contentEditable = "false";
+    taskName.style.borderStyle = "none";
+    taskName = document.getElementById('divNazwa' + id);
+    if (taskName.innerHTML.length != 0) {
+      document.getElementById('edit_name').value = taskName.innerHTML;
+      document.getElementById('edit_submit').click();
+    }
+    if (taskName.innerHTML.length == 0) {
+      document.getElementById('edit_name').value = taskNameCopy;
+      document.getElementById('edit_submit').click();
+    }
+  })
+
 }
 
 

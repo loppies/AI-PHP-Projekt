@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $task = $_POST["taskName"];
   $project = $_POST["projectID"];
   
+  
   $alltasks = TaskRepository::getAllTasks($userID);
   if (isset($_POST['stopButt'])){
       $full_seconds = intval($_POST["seconds_full"]);
@@ -24,6 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $time2 = date('Y-m-d H:i:s', $time);
       TaskRepository::updateTaskStopTime(end($alltasks)->getId(),$time2);
   }
+  elseif (isset($_POST['edit_submit'])){
+    $taskId = intval($_POST["edit_id"]);
+    $taskName = $_POST["edit_name"];
+    $editTask = TaskRepository::updateTaskName($taskId,$taskName);
+  }
+  
   else {
     if ($alltask != null && end($alltasks)->getStop() != null){
       $task = TaskRepository::addTask($userID,$task, $project);

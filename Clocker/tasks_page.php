@@ -132,9 +132,10 @@ $html = <<<EOT
         var newDivUsun = document.createElement('div');
         var newButtonUsun = document.createElement('button');
         newDivUsun.id = "divUsun" + i;
-        newButtonUsun.scr = "/img/delete.png";
         newDivUsun.className = "delete";
         newButtonUsun.innerHTML = "DELETE";
+        newButtonUsun.addEventListener("click", deleteTask);
+        newButtonUsun.id = "deleteBtn" + i;
         divUsun.appendChild(newDivUsun);
         newDivUsun.appendChild(newButtonUsun);
         
@@ -142,8 +143,10 @@ $html = <<<EOT
         newDivEdytuj.className = "edit";
         newDivEdytuj.id = "divEdytuj" + i;
         var newButtonEdytuj = document.createElement('button');
-        //newButtonEdytuj.scr = "/img/edit.png";
         newButtonEdytuj.innerHTML = "EDIT";
+        newButtonEdytuj.className = "editClass";
+        newButtonEdytuj.addEventListener("click", editTask);
+        newButtonEdytuj.id = "editBtn" + i;
         divEdytuj.appendChild(newDivEdytuj);
         newDivEdytuj.appendChild(newButtonEdytuj);
         
@@ -151,12 +154,11 @@ $html = <<<EOT
         newDivTaskId.className = "task_id";
         newDivTaskId.id = "divTaskId" + i;
         newDivTaskId.innerHTML = tasks_id[i];
-        divTaskId.appendChild(newDivTaskId);
-        
-        
-        
+        divTaskId.appendChild(newDivTaskId);   
       }
     }
+    
+    
 
     </script>
 <div class="container">
@@ -178,13 +180,17 @@ $html = <<<EOT
     <input id="searchbar" type="text" name="search" placeholder="Szukaj.." onkeyup="search()">
     <div class="buttony">
     <button class="startButt" onclick="start()"></button>
+    
     <form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return endTask()">
     <input type="hidden" id="seconds_full" name="seconds_full"></input>
     <button name="stopButt" class="stopButt" onclick="reset()"></button>
-    
     </form>
     </div>
-   
+    
+   <form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return deleteTask()">
+   <input type="hidden" id="delete_id" name="delete_id"></input>
+   </form>
+
     
     <div>
     <form method="POST">
@@ -205,8 +211,13 @@ $html = <<<EOT
           <div class="divTableCell delete" id="usun">&nbsp;Usuń</div>
           <div class="divTableCell edit" id="edytuj">&nbsp;Edytuj</div>
           <div class="divTableCell task_id" id="task_id">&nbsp;Task id</div>
+          
+          <form method="POST" action="/src/Controllers/TaskController.php">
+          <input type="hidden" id="edit_id" name="edit_id"></input>
+          <input type="hidden" id="edit_name" name="edit_name"></input>
+          <button hidden id="edit_submit" name="edit_submit">Potwierdz</button>
+          </form>
         </div>
-        
       </div>
     </div>
 EOT;
@@ -219,7 +230,6 @@ $html2 = <<<EOT
 </html>
 EOT;
 echo $html;
-//echo '<form method="POST">';
 echo '<form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return addTask()">
       <p class="newTask">Dodaj nowe zadanie</p>
       <p class="nameTask">Nazwa:<input id="taskName" type="text" name="taskName"></p>
