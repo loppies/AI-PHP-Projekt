@@ -30,13 +30,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $taskName = $_POST["edit_name"];
     $editTask = TaskRepository::updateTaskName($taskId,$taskName);
   }
+  elseif (isset($_POST['delete_submit'])){
+  $taskId = intval($_POST["delete_id"]);
+  TaskRepository::deleteTask($taskId);
+  }
   
   else {
-    if ($alltask != null && end($alltasks)->getStop() != null){
-      $task = TaskRepository::addTask($userID,$task, $project);
+    if (strlen($task) != 0){
+    if ($alltasks != null && end($alltasks)->getStop() != null ){
+      TaskRepository::addTask($userID,$task, $project);
   }
-    else {
-      $task = TaskRepository::addTask($userID,$task, $project);
+    elseif ($alltasks == null) {
+      TaskRepository::addTask($userID,$task, $project);
+    }
     }
 }
 

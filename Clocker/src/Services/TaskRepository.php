@@ -159,7 +159,22 @@ class TaskRepository {
 
         return $task;
     }
+  
+ public static function deleteTask($taskId) {
+ $pdo = PdoConnection::getPdoConnection();
 
+ $sql = "DELETE from tasks where id = :task_id";
+ $stm = $pdo->prepare($sql);
+ $result = $stm->execute( [
+ ':task_id' => $taskId
+ ] );
+
+ $task = self::getTask($taskId);
+
+ PdoConnection::closePdoConnection($pdo);
+
+ return $task;
+ }
     /**
      * @param $taskId
      * @return Task|null
