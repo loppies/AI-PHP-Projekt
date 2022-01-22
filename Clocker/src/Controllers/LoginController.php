@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //        }
       
               if ($user->getIsAdmin() == true) {
-            header("Location: /tasks_page.php");
+            header("Location: /admin_task_page.php");
         } else {
             header("Location: /tasks_page.php");
         }
