@@ -236,15 +236,16 @@ echo $html;
 echo '<form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return addTaskFunction()">
       <p class="newTask">Dodaj nowe zadanie</p>
       <p class="nameTask">Nazwa:<input id="taskName" type="text" name="taskName"></p>
-      <p class="chooseProject">Wybierz projekt   </p>
-      <button class="addT" type="submit" id="addTask">Dodaj</button>';
-echo '<select name="projectID" id="projectID">';
+      
+     ';
+
+echo '<p class="chooseProject">Wybierz projekt  <select name="projectID" id="projectID">';
 foreach ($projects as $row){
     echo '<option value="' . htmlspecialchars($row->getId()) . '">'
       . htmlspecialchars($row->getName())
       . '</option>';
 }
-echo '</select>';
+echo '</select></p> <button class="addT" type="submit" id="addTask">Dodaj</button>';
 echo '</form>';
 
 echo $html2;
