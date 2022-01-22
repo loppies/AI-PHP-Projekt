@@ -2,6 +2,7 @@
 
 namespace Clocker\Services;
 use PDO;
+
 require_once __DIR__ . '/../../cfg/config_db.php';
 
 class PdoConnection {

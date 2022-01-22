@@ -21,6 +21,8 @@ class ProjectRepository {
         $result = $stm->execute( array('user_id' => $userId) );
         $rows = $stm->fetchAll(PDO::FETCH_ASSOC);
 
+        PdoConnection::closePdoConnection($pdo);
+
         if (!$rows) {
             return null;
         }
@@ -37,8 +39,6 @@ class ProjectRepository {
             $projects[] = $project;
         }
 
-        PdoConnection::closePdoConnection($pdo);
-
         return $projects;
     }
 
@@ -54,6 +54,8 @@ class ProjectRepository {
         $result = $stm->execute( array('project_id' => $projectId) );
         $row = $stm->fetch(PDO::FETCH_ASSOC);
 
+        PdoConnection::closePdoConnection($pdo);
+
         if (!$row) {
             return null;
         }
@@ -64,8 +66,6 @@ class ProjectRepository {
             ->setClientId($row['client_id'])
             ->setUserId($row['user_id'])
             ->setName($row['name']);
-
-        PdoConnection::closePdoConnection($pdo);
 
         return $project;
     }
@@ -142,5 +142,39 @@ class ProjectRepository {
         PdoConnection::closePdoConnection($pdo);
 
         return $project;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public static function countProject() {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT count(*) as counter FROM projects";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $count = $stm->fetch(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$count) {
+            return null;
+        }
+
+        return $count["counter"];
+    }
+
+    /**
+     * @param $projectId
+     * @return void
+     */
+    public static function deleteProject($projectId) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "DELETE FROM projects WHERE id = :project_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( array('project_id' => $projectId) );
+
+        PdoConnection::closePdoConnection($pdo);
     }
 }

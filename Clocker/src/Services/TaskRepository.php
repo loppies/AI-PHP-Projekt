@@ -5,6 +5,7 @@ namespace Clocker\Services;
 require_once __DIR__ . './PdoConnection.php';
 require_once __DIR__ . '/../Entities/Task.php';
 
+use Clocker\Entities\User;
 use PDO;
 use Clocker\Entities\Task;
 
@@ -20,6 +21,8 @@ class TaskRepository {
         $stm = $pdo->prepare($sql);
         $result = $stm->execute( array('user_id' => $userId) );
         $rows = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
 
         if (!$rows) {
             return null;
@@ -39,8 +42,6 @@ class TaskRepository {
             $tasks[] = $task;
         }
 
-        PdoConnection::closePdoConnection($pdo);
-
         return $tasks;
     }
 
@@ -56,6 +57,8 @@ class TaskRepository {
         $result = $stm->execute( array('task_id' => $taskId) );
         $row = $stm->fetch(PDO::FETCH_ASSOC);
 
+        PdoConnection::closePdoConnection($pdo);
+
         if (!$row) {
             return null;
         }
@@ -68,8 +71,6 @@ class TaskRepository {
             ->setName($row['name'])
             ->setStart($row['start'])
             ->setStop($row['stop']);
-
-        PdoConnection::closePdoConnection($pdo);
 
         return $task;
     }
@@ -164,12 +165,72 @@ class TaskRepository {
 
         return $task;
     }
-}
 
-// $test_task = TaskRepository::getAllTasks(10);
-// $test_task = TaskRepository::getTask(2);
-// $test_task = TaskRepository::updateTaskStopTime(1);
-// $test_task = TaskRepository::updateTaskName(1, "Zmieniona nazwa");
-// $test_task = TaskRepository::updateTaskProject(1, 11);
-// $test_task = TaskRepository::addTask(10, "Task 4", 11);
-// print_r($test_task);
+    /**
+     * @return array|null
+     */
+    public static function getAllTasksForAllUsers() {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT * FROM tasks";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $rows = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$rows) {
+            return null;
+        }
+
+        $tasks = [];
+        foreach ($rows as $row) {
+            $task = new Task();
+            $task
+                ->setId($row['id'])
+                ->setUserId($row['user_id'])
+                ->setProjectId($row['project_id'])
+                ->setName($row['name'])
+                ->setStart($row['start'])
+                ->setStop($row['stop']);
+
+            $tasks[] = $task;
+        }
+
+        return $tasks;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public static function countTask() {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT count(*) as counter FROM tasks";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $count = $stm->fetch(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$count) {
+            return null;
+        }
+
+        return $count["counter"];
+    }
+
+    /**
+     * @param $taskId
+     * @return void
+     */
+    public static function deleteTask($taskId) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "DELETE FROM tasks WHERE id = :task_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( array('task_id' => $taskId) );
+
+        PdoConnection::closePdoConnection($pdo);
+    }
+}
