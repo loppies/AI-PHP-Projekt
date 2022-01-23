@@ -1,14 +1,20 @@
 <?php
 require (__DIR__ . "/src/Services/TaskRepository.php");
 require (__DIR__ . "/src/Services/ProjectRepository.php");
+require (__DIR__ . "/src/Services/UserRepository.php");
 //require (__DIR__ . "./ErrorBuilder.php");
 
 use Clocker\Services\TaskRepository;
 use Clocker\Services\ProjectRepository;
+use Clocker\Services\UserRepository;
 
 session_start();
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_login'];
+
+$user = UserRepository::getUser($user_id);
+$is_admin = $user->getIsAdmin();
+
 $projects = ProjectRepository::getAllProjects($user_id);
 $tasks = TaskRepository::getAllTasks($user_id);
 
@@ -51,6 +57,10 @@ $html = <<<EOT
       window.onload = makeDivs;
 
       function makeDivs() {
+      if ('$is_admin' == 1){
+            let adm = document.getElementById("adm");
+            adm.removeAttribute("style");
+        }
         var user_name = document.getElementById('user_name');
         user_name.innerHTML = "$user_name";
         var names = JSON.parse('$name_json');
@@ -174,22 +184,23 @@ $html = <<<EOT
   <div class="logB1"><button class="logButt" onclick="wyloguj()">Wyloguj się</button></div>
   <div class="lista">
     <ul>
-      <li>
-                    <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
-                        <button class="listButt projects">Projekty</button>
-                    </form>
-                </li>
-                <li>
-                    <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
-                        <button class="listButt tasks">Zadania</button>
-                    </form>
-                </li>
-                <li>
-                    <form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
-                        <button class="listButt clients">Klienci</button>
-                    </form>
-                </li>
-                <li><button class="listButt raports">Raporty</button></li>
+<li>
+<form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
+    <button class="listButt projects">Projekty</button>
+</form>
+</li>
+<li>
+<form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
+    <button class="listButt tasks">Zadania</button>
+</form>
+</li>
+<li>
+<form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
+    <button class="listButt clients">Klienci</button>
+</form>
+</li>
+<li><button class="listButt raports">Raporty</button></li>
+<li><button id="adm" class="listButt users" style="display:none;">Użytkownicy</button></li>
     </ul>
   </div>
   <div class="tabela">
