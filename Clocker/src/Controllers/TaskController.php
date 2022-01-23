@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $timestamp1 = strtotime($timeStart);
       $time = $timestamp1 + $full_seconds;
       $time2 = date('Y-m-d H:i:s', $time);
-      TaskRepository::updateTaskStopTime(end($alltasks)->getId(),$time2);
+      TaskRepository::updateTaskStopTime(end($alltasks)->getId());
   }
   elseif (isset($_POST['edit_submit'])){
     $taskId = intval($_POST["edit_id"]);

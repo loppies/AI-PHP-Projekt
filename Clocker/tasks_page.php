@@ -109,16 +109,17 @@ $html = <<<EOT
           newDivTime.id = "divTime" + i;
           let start = document.getElementById('divStart' + i);
           let stop = document.getElementById('divStop' + i);
-          startDate = new Date(start.innerHTML);
+          startDate = new Date(start.innerHTML); 
           stopDate = new Date(stop.innerHTML);
           if (stop.innerHTML != "----") {
-            var diffTime = Math.abs(stopDate - startDate);
-            var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            diffTime = diffTime / 1000;
-            var hours = diffTime / 3600;
-            var minutes = diffTime / 60;
-            var seconds = diffTime;
-            newDivTime.innerHTML = diffDays + " dni " + parseInt(hours) + " H " + parseInt(minutes) + " m " + parseInt(seconds) + " s";
+           var diffTime = Math.abs(stopDate-startDate);
+          var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          diffTime = diffTime / 1000;
+          var hours = (diffTime / 3600) - (24 * diffDays);
+          var minutes = (diffTime / 60) - (1440 * diffDays) - (60 * parseInt(hours));
+          var seconds = Math.round((minutes - parseInt(minutes))*60);
+          var result = diffDays + " dni " + parseInt(hours) + " H " + parseInt(minutes) + " m " + parseInt(seconds) + " s";
+          newDivTime.innerHTML = result;
           } else {
             newDivTime.innerHTML = "----";
           }
