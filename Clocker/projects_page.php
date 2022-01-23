@@ -25,6 +25,8 @@ $user_clients_id = array();
 $starts = array();
 $stops = array();
 $task_id = array();
+$user = UserRepository::getUser($user_id);
+$is_admin = $user->getIsAdmin();
 if ($projects != NULL)
 {
   foreach ($projects as $row)
@@ -87,18 +89,23 @@ $html = <<<EOT
             <div class="name"><img class = 'profil'src="img/profile.png">$user_name</div>
             <div class="logB1"><button class="logButt">Wyloguj się</button></div>
             <div class="lista"><ul>
-                <li>
-                    <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
-                        <button class="listButt projects">Projekty</button>
-                    </form>
-                </li>
-                <li>
-                    <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
-                        <button class="listButt tasks">Zadania</button>
-                    </form>
-                </li>
-                <li><button class="listButt clients">Klienci</button></li>
-                <li><button class="listButt raports">Raporty</button></li>
+            <li>
+                <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
+                    <button class="listButt projects">Projekty</button>
+                </form>
+            </li>
+            <li>
+                <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
+                    <button class="listButt tasks">Zadania</button>
+                </form>
+            </li>
+            <li>
+                <form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
+                    <button class="listButt clients">Klienci</button>
+                </form>
+            </li>
+            <li><button class="listButt raports">Raporty</button></li>
+            <li><button id="adm" class="listButt users" style="display:none;">Użytkownicy</button></li>
             </ul></div>
             <div class="tabela">
                 <input id="searchbar" type="text" name="search" placeholder="Szukaj..">
@@ -125,6 +132,10 @@ $html = <<<EOT
           </div>
     </body>
     <script>
+        if ('$is_admin' == 1){
+            let adm = document.getElementById("adm");
+            adm.removeAttribute("style");
+        }
         var data = [];
         var names = JSON.parse('$name_json');
         var clients_id = JSON.parse('$client_name_json');

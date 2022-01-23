@@ -1,12 +1,3 @@
-let rows = document.getElementsByClassName("divTableRow inner");
-// for (let i = 0; i < rows.length; i++){
-//     console.log(rows[i].id)
-// }
-
-function setValue(value) {
-    value.setAttribute("action", "/src/Controllers/ProjectController.php");
-}
-
 function edit(curr_id){
     let flag = 0;
     curr_id = curr_id[curr_id.length-1];
@@ -122,8 +113,6 @@ function edit(curr_id){
         }
     }
 }
-
-document.getElementById("on_submission").onsubmit = function() {submit()};
 
 function submit(){
     let get_form = document.getElementById("on_submission");
