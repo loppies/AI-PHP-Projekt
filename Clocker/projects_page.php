@@ -111,7 +111,7 @@ $html = <<<EOT
                             <div class="divTableCell clients1">&nbsp;Klienci</div>
                             <div class="divTableCell delete">&nbsp;Usuń</div>
                             <div class="divTableCell edit">&nbsp;Edytuj</div>
-                            <div class="divTableCell ids">&nbsp;Id</div>
+                            <div class="divTableCell ids" style="display:none;">&nbsp;Id</div>
                         </div>
                     </div>
                 </div>
@@ -220,6 +220,7 @@ $html = <<<EOT
             let elem = document.createElement("div");
             elem.setAttribute("class", "divTableCell");
             elem.setAttribute("id", String("project"+i));
+            elem.setAttribute("style", "display:none;");
             elem.innerText = String(project_id[i]);
             new_row.appendChild(elem);
 
