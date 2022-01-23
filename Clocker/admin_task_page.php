@@ -111,13 +111,14 @@ $html = <<<EOT
           startDate = new Date(start.innerHTML);
           stopDate = new Date(stop.innerHTML);
           if (stop.innerHTML != "----") {
-            var diffTime = Math.abs(stopDate - startDate);
-            var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            diffTime = diffTime / 1000;
-            var hours = diffTime / 3600;
-            var minutes = diffTime / 60;
-            var seconds = diffTime;
-            newDivTime.innerHTML = diffDays + " dni " + parseInt(hours) + " H " + parseInt(minutes) + " m " + parseInt(seconds) + " s";
+          var diffTime = Math.abs(stopDate-startDate);
+          var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          diffTime = diffTime / 1000;
+          var hours = (diffTime / 3600) - (24 * diffDays);
+          var minutes = (diffTime / 60) - (1440 * diffDays) - (60 * parseInt(hours));
+          var seconds = Math.round((minutes - parseInt(minutes))*60);
+          var result = diffDays + " dni " + parseInt(hours) + " H " + parseInt(minutes) + " m " + parseInt(seconds) + " s";
+          newDivTime.innerHTML = result;
           } else {
             newDivTime.innerHTML = "----";
           }
@@ -172,11 +173,22 @@ $html = <<<EOT
 <div class="logB1"><button class="logButt">Wyloguj się</button></div>
 <div class="lista">
 <ul>
-<li><button class="listButt projects">Projekty</button></li>
-<li><button class="listButt tasks">Zadania</button></li>
-<li><button class="listButt clients">Klienci</button></li>
-<li><button class="listButt raports">Raporty</button></li>
-<li><button class="listButt users">Użytkownicy</button></li>
+<li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
+                        <button class="listButt projects">Projekty</button>
+                    </form>
+                </li>
+                <li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
+                        <button class="listButt tasks">Zadania</button>
+                    </form>
+                </li>
+                <li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
+                        <button class="listButt clients">Klienci</button>
+                    </form>
+                </li>
+                <li><button class="listButt raports">Raporty</button></li>
 </ul>
 </div>
 <div class="tabela">

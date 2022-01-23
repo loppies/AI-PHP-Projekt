@@ -112,7 +112,7 @@ $html = <<<EOT
           startDate = new Date(start.innerHTML); 
           stopDate = new Date(stop.innerHTML);
           if (stop.innerHTML != "----") {
-           var diffTime = Math.abs(stopDate-startDate);
+          var diffTime = Math.abs(stopDate-startDate);
           var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
           diffTime = diffTime / 1000;
           var hours = (diffTime / 3600) - (24 * diffDays);
@@ -174,10 +174,22 @@ $html = <<<EOT
   <div class="logB1"><button class="logButt" onclick="wyloguj()">Wyloguj się</button></div>
   <div class="lista">
     <ul>
-      <li><button class="listButt projects">Projekty</button></li>
-      <li><button class="listButt tasks">Zadania</button></li>
-      <li><button class="listButt clients">Klienci</button></li>
-      <li><button class="listButt raports">Raporty</button></li>
+      <li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
+                        <button class="listButt projects">Projekty</button>
+                    </form>
+                </li>
+                <li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
+                        <button class="listButt tasks">Zadania</button>
+                    </form>
+                </li>
+                <li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
+                        <button class="listButt clients">Klienci</button>
+                    </form>
+                </li>
+                <li><button class="listButt raports">Raporty</button></li>
     </ul>
   </div>
   <div class="tabela">
