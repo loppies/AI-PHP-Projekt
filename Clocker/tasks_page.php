@@ -13,14 +13,16 @@ $project_id = array();
 $name = array();
 $start = array();
 $stop = array();
-foreach ($tasks as $row)
+if ($tasks != NULL)
 {
-    $counter += 1;
-    $name[] = $row->getName();
-    $project_id[] = $row->getProjectId();
-    $start[] = $row->getStart();
-    $stop[] = $row->getStop();
-    
+  foreach ($tasks as $row)
+  {
+      $counter += 1;
+      $name[] = $row->getName();
+      $project_id[] = $row->getProjectId();
+      $start[] = $row->getStart();
+      $stop[] = $row->getStop();
+  }
 }
 
 $name_json = json_encode($name);
@@ -116,8 +118,16 @@ $html = <<<EOT
   <div class="logB1"><button class="logButt" onclick="wyloguj()">Wyloguj się</button></div>
   <div class="lista">
     <ul>
-      <li><button class="listButt projects">Projekty</button></li>
-      <li><button class="listButt tasks">Zadania</button></li>
+        <li>
+          <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
+            <button class="listButt projects">Projekty</button>
+        </form>
+      </li>
+      <li>
+        <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
+          <button class="listButt tasks">Zadania</button>
+        </form>
+      </li>
       <li><button class="listButt clients">Klienci</button></li>
       <li><button class="listButt raports">Raporty</button></li>
     </ul>
