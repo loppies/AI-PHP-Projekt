@@ -20,6 +20,9 @@ $tasks = TaskRepository::getAllTasks($user_id);
 
 $counter = 0;
 $project_id = array();
+
+$project_name = array();
+
 $name = array();
 $start = array();
 $stop = array();
@@ -29,10 +32,18 @@ foreach ($tasks as $row)
 {
     $counter += 1;
     $name[] = $row->getName();
+    $one_project_id = $row->getProjectId();
     $project_id[] = $row->getProjectId();
     $start[] = $row->getStart();
     $stop[] = $row->getStop();
     $task_id[] = $row->getId();
+    $one_project= ProjectRepository::getProject($one_project_id);
+    if ($one_project == null){
+      $project_name[] = "";
+    }
+  else{
+    $project_name[] = $one_project->getName();
+  }
 }
 }
 
@@ -41,6 +52,8 @@ $project_id_json = json_encode($project_id);
 $start_json = json_encode($start);
 $stop_json = json_encode($stop);
 $task_id_json = json_encode($task_id);
+$project_names_json = json_encode($project_name);
+
 $html = <<<EOT
 
 <!DOCTYPE html>
@@ -57,6 +70,7 @@ $html = <<<EOT
       window.onload = makeDivs;
 
       function makeDivs() {
+      
       if ('$is_admin' == 1){
             let adm = document.getElementById("adm");
             adm.removeAttribute("style");
@@ -68,6 +82,7 @@ $html = <<<EOT
         var starts = JSON.parse('$start_json');
         var stops = JSON.parse('$stop_json');
         var tasks_id = JSON.parse('$task_id_json');
+        var projects_name = JSON.parse('$project_names_json');
         var table = document.getElementById('divTableBody');
 
         for (var i = 0; i < $counter; i++) {
@@ -91,7 +106,7 @@ $html = <<<EOT
           var newDivProjectId = document.createElement('div');
           newDivProjectId.className = "divTableCell";
           newDivProjectId.id = "divProjectId" + i;
-          newDivProjectId.innerHTML = projects_id[i];
+          newDivProjectId.innerHTML = projects_name[i];
           newTableRow.appendChild(newDivProjectId);
           table.append(newTableRow);
 
@@ -103,7 +118,7 @@ $html = <<<EOT
           table.append(newTableRow);
 
           var newDivStop = document.createElement('div');
-          newDivStop.className = "divTableCell";
+          newDivStop.className = "divTableCell divStop";
           newDivStop.id = "divStop" + i;
           if (stops[i] != null) {
             newDivStop.innerHTML = stops[i];
@@ -165,14 +180,32 @@ $html = <<<EOT
           newDivEdytuj.appendChild(newButtonEdytuj);
           newTableRow.appendChild(newDivEdytuj);
           table.append(newTableRow);
+          
+          var newDivStawka = document.createElement('div');
+          newDivStawka.className = "divTableCell";
+          var newButtonStawka = document.createElement('button');
+          newButtonStawka.className = "stawkaButt";
+          //newButtonStawka.addEventListener("click", dodajStawke);
+          newButtonStawka.id = "stawkaBtn" + i;
+          newButtonStawka.innerHTML = "Dodaj stawke";
+          newDivStawka.appendChild(newButtonStawka);
+          newTableRow.appendChild(newDivStawka);
+          table.append(newTableRow);
 
           var newDivTaskId = document.createElement('div');
           newDivTaskId.className = "divTableCell";
           newDivTaskId.id = "divTaskId" + i;
           newDivTaskId.innerHTML = tasks_id[i];
+          newDivTaskId.style.display = "none";
           newTableRow.appendChild(newDivTaskId);
           table.append(newTableRow);
         }
+        
+        var timeEnd = document.getElementsByClassName('divStop');
+        if (timeEnd[timeEnd.length - 1].innerHTML == "----") {
+          start();
+        }
+        
       }
     </script>  
 <div class="container">
@@ -206,7 +239,7 @@ $html = <<<EOT
   <div class="tabela">
     <input id="searchbar" type="text" name="search" placeholder="Szukaj.." onkeyup="search()">
     <div class="buttony">
-    <button class="startButt" onclick="start()"></button>
+    
     
     <form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return endTaskFunction()">
     <input type="hidden" id="seconds_full" name="seconds_full"></input>
@@ -238,7 +271,9 @@ $html = <<<EOT
         <div class="divTableCell time">&nbsp;Laczny czas</div>
         <div class="divTableCell delete">&nbsp;Usuń</div>
         <div class="divTableCell edit">&nbsp;Edytuj</div>
-        <div class="divTableCell task_id" >&nbsp;Task id</div>
+        <div class="divTableCell stawka" >&nbsp;Stawka</div>
+        <div class="divTableCell wynagrodzenie" >&nbsp;Wynagrodzenie</div>
+        <div class="divTableCell task_id" style="display: none">&nbsp;Task id</div>
         
         <form method="POST" action="/src/Controllers/TaskController.php">
         <input type="hidden" id="edit_id" name="edit_id"></input>
@@ -260,16 +295,15 @@ echo $html;
 echo '<form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return addTaskFunction()">
       <p class="newTask">Dodaj nowe zadanie</p>
       <p class="nameTask">Nazwa:<input id="taskName" type="text" name="taskName"></p>
-      
      ';
 
 echo '<p class="chooseProject">Wybierz projekt  <select name="projectID" id="projectID">';
 foreach ($projects as $row){
     echo '<option value="' . htmlspecialchars($row->getId()) . '">'
       . htmlspecialchars($row->getName())
-      . '</option>';
+      ;
 }
-echo '</select></p> <button class="addT" type="submit" id="addTask">Dodaj</button>';
+echo '<option value="empty">Pusty projekt</option></select></p> <button class="addT" type="submit" id="addTask">Dodaj</button>';
 echo '</form>';
 
 echo $html2;

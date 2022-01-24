@@ -6,8 +6,6 @@ var second = 0;
 var millisecond = 0;
 var cron = 0;
 
-
-
 function timer() {
   if ((millisecond += 10) == 1000) {
     millisecond = 0;
@@ -59,17 +57,21 @@ function search() {
   input = document.getElementById('searchbar');
   filter = input.value.toUpperCase();
   var div_names = [];
+  var div_dates_start = [];
   var div_rows = document.getElementsByClassName("divTableRow");
   var rows = [];
   for (let i = 0; i < div_rows.length - 1; i++) {
     let names = document.getElementById('divNazwa' + i).innerHTML;
+    let dates_start = document.getElementById('divStart' + i).innerHTML;
     rows.push(document.getElementById('divTableRow' + i));
     div_names.push(names);
+    div_dates_start.push(dates_start);
   }
   for (let i = 0; i < div_names.length; i++) {
     let a = div_names[i];
+    let b = div_dates_start[i];
     txtValue = a.textContent || a.innerText;
-    if (a.toUpperCase().indexOf(filter) > -1) {
+    if ((a.toUpperCase().indexOf(filter) > -1) || (b.toUpperCase().indexOf(filter) > -1)) {
       rows[i].style.display = "";
     } else {
       rows[i].style.display = "none";
