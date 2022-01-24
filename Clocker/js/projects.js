@@ -114,6 +114,8 @@ function edit(curr_id){
     }
 }
 
+document.getElementById("on_submission").onsubmit = function() {submit()};
+
 function submit(){
     let get_form = document.getElementById("on_submission");
     var value = select.options[select.selectedIndex].value;
