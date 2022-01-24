@@ -2,11 +2,12 @@
 
 namespace Clocker\Services;
 
-use Clocker\Entities\User;
-use PDO;
-
+require_once __DIR__ . './PdoConnection.php';
 require_once __DIR__ . '/../Entities/User.php';
-require_once __DIR__ . '/../../cfg/config_db.php';
+
+use Clocker\Entities\Task;
+use PDO;
+use Clocker\Entities\User;
 
 class UserRepository {
     /**
@@ -16,8 +17,7 @@ class UserRepository {
      * @return User|null
      */
     public static function registerUser($userLogin, $password, $email) {
-        global $config;
-        $pdo = new PDO($config['dsn'], $config['username'], $config['password']);
+        $pdo = PdoConnection::getPdoConnection();
 
         $sql = "INSERT INTO users (login, password, email, is_admin) VALUES (:login, :password, :email, :is_admin)";
         $stm = $pdo->prepare($sql);
@@ -30,6 +30,8 @@ class UserRepository {
 
         $user = self::loginUser($userLogin);
 
+        PdoConnection::closePdoConnection($pdo);
+
         return $user;
     }
 
@@ -38,13 +40,14 @@ class UserRepository {
      * @return User|null
      */
     public static function loginUser($userLogin) {
-        global $config;
-        $pdo = new PDO($config['dsn'], $config['username'], $config['password']);
+        $pdo = PdoConnection::getPdoConnection();
 
         $sql = "SELECT * FROM users WHERE login = :userLogin";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute( array('userLogin' => $userLogin) );
         $row = $stm->fetch(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
 
         if (!$row) {
             return null;
@@ -59,5 +62,68 @@ class UserRepository {
             ->setIsAdmin($row['is_admin']);
 
         return $user;
+    }
+
+    /**
+     * @param $userId
+     * @return User|null
+     */
+    public static function getUser($userId) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT * FROM users WHERE id = :user_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( array('user_id' => $userId) );
+        $row = $stm->fetch(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$row) {
+            return null;
+        }
+
+        $user = new User();
+        $user
+            ->setId($row['id'])
+            ->setLogin($row['login'])
+            ->setPassword($row['password'])
+            ->setEmail($row['email'])
+            ->setIsAdmin($row['is_admin']);
+
+        return $user;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public static function countUser() {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT count(*) as counter FROM users";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $count = $stm->fetch(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$count) {
+            return null;
+        }
+
+        return $count["counter"];
+    }
+
+    /**
+     * @param $userId
+     * @return void
+     */
+    public static function deleteUser($userId) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "DELETE FROM users WHERE id = :user_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( array('user_id' => $userId) );
+
+        PdoConnection::closePdoConnection($pdo);
     }
 }

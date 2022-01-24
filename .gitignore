@@ -1,1 +1,3 @@
 Clocker/.idea
+Clocker/cfg/config_db.php
+Clocker/src/Controllers/GetAllTasksController.php
