@@ -21,6 +21,8 @@ class ClientRepository {
         $result = $stm->execute( array('user_id' => $userId) );
         $rows = $stm->fetchAll(PDO::FETCH_ASSOC);
 
+        PdoConnection::closePdoConnection($pdo);
+
         if (!$rows) {
             return null;
         }
@@ -35,8 +37,6 @@ class ClientRepository {
 
             $clients[] = $client;
         }
-
-        PdoConnection::closePdoConnection($pdo);
 
         return $clients;
     }
@@ -53,6 +53,8 @@ class ClientRepository {
         $result = $stm->execute( array('client_id' => $clientId) );
         $row = $stm->fetch(PDO::FETCH_ASSOC);
 
+        PdoConnection::closePdoConnection($pdo);
+
         if (!$row) {
             return null;
         }
@@ -63,37 +65,31 @@ class ClientRepository {
             ->setUserId($row['user_id'])
             ->setName($row['name']);
 
-        PdoConnection::closePdoConnection($pdo);
-
         return $client;
     }
 
     /**
      * @param $userId
      * @param $clientName
-     * @return Client|void|null
+     * @return Client|null
      */
     public static function addClient($userId, $clientName) {
-        try {
-            $pdo = PdoConnection::getPdoConnection();
+        $pdo = PdoConnection::getPdoConnection();
 
-            print_r($userId, $clientName);
+        print_r($userId, $clientName);
 
-            $sql = "INSERT INTO clients (user_id, name) VALUES (:user_id, :name)";
-            $stm = $pdo->prepare($sql);
-            $result = $stm->execute([
-                ':user_id' => $userId,
-                ':name' => $clientName
-            ]);
+        $sql = "INSERT INTO clients (user_id, name) VALUES (:user_id, :name)";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute([
+            ':user_id' => $userId,
+            ':name' => $clientName
+        ]);
 
-            $client = self::getClient($pdo->lastInsertId());
+        $client = self::getClient($pdo->lastInsertId());
 
-            PdoConnection::closePdoConnection($pdo);
+        PdoConnection::closePdoConnection($pdo);
 
-            return $client;
-        } catch (PDOException $exception) {
-            echo $exception->getCode();
-        }
+        return $client;
     }
 
     /**
@@ -119,5 +115,39 @@ class ClientRepository {
         PdoConnection::closePdoConnection($pdo);
 
         return $client;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public static function countClient() {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT count(*) as counter FROM clients";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $count = $stm->fetch(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$count) {
+            return null;
+        }
+
+        return $count["counter"];
+    }
+
+    /**
+     * @param $clientId
+     * @return void
+     */
+    public static function deleteClient($clientId) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "DELETE FROM clients WHERE id = :client_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( array('client_id' => $clientId) );
+
+        PdoConnection::closePdoConnection($pdo);
     }
 }

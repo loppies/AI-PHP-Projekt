@@ -40,7 +40,6 @@ $project_client_id_json = json_encode($project_client_id);
 $project_name_json = json_encode($project_name);
 
 $html = <<<EOT
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -73,7 +72,7 @@ $html = <<<EOT
                 <li><button id="adm" class="listButt users" style="display:none;">Użytkownicy</button></li>
             </ul></div>
             <div class="tabela">
-                <input id="searchbar" type="text" name="search" placeholder="Szukaj..">
+                <input id="searchbar" type="text" name="search" placeholder="Szukaj.." onkeyup="searchProjects()">
                 <div class="divTable">
                     <div class="divTableBody" id="divTableBody">
                         <div class="divTableRow header">
@@ -91,6 +90,10 @@ $html = <<<EOT
                     <p class="nameClient">Nazwa:<input id="clientAdd" type="text" name="add"></p>
                     <button class="addC">Dodaj</button>
                 </form>
+                <form method="POST" action="/src/Controllers/ClientController.php" onsubmit="return deleteClientFunction()">
+            <input type="hidden" id="delete_id" name="delete_id"></input>
+            <button hidden id="delete_submit" name="delete_submit">Potwierdz</button>
+           </form>
             </br>
             </div>
           </div>
@@ -107,7 +110,6 @@ $html = <<<EOT
         var project_name = JSON.parse('$project_name_json');
         var amount = [...Array(names.length+1).keys()];
         amount.splice(0,1);
-
         data.push(amount);
         data.push(names);
         var projects = [];
@@ -121,13 +123,11 @@ $html = <<<EOT
             projects.push(project);
         }
         data.push(projects);
-
         let table = document.getElementById("divTableBody");
         for (let i = 0; i < data[0].length; i++){
             let new_row = document.createElement("div");
             new_row.setAttribute("class", "divTableRow inner");
             new_row.setAttribute("id", String("r"+i));
-
             for (let j = 0; j < 3; j++){
                 let elem = document.createElement("div");
                 elem.setAttribute("class", "divTableCell")
@@ -139,34 +139,27 @@ $html = <<<EOT
             }
             let trash_elem = document.createElement("div");
             trash_elem.setAttribute("class", "divTableCell");
-
             let trash_button = document.createElement("button");
             trash_button.setAttribute("class", "deleteButt");
             trash_button.setAttribute("id", String("trash"+i));
-
             let trash_img = document.createElement("img");
             trash_img.setAttribute("class", "deletIcon");
             trash_img.setAttribute("src", "img/delete.png");
-
             trash_button.appendChild(trash_img);
             trash_elem.appendChild(trash_button);
             new_row.appendChild(trash_elem);
 
             let edit_elem = document.createElement("div");
             edit_elem.setAttribute("class", "divTableCell");
-
             let edit_button = document.createElement("button");
             edit_button.setAttribute("class", "editButt IconDelete");
             edit_button.setAttribute("id", String("edit"+i));
-
             let edit_img = document.createElement("img");
             edit_img.setAttribute("src", "img/edit.png");
-
             let edit_form = document.createElement("form");
             edit_form.setAttribute("method", "POST");
             edit_form.setAttribute("class", "forms_to_change");
             edit_form.setAttribute("id", String("forms_to_change"+i));
-
             edit_button.appendChild(edit_img);
             edit_form.appendChild(edit_button);
             edit_elem.appendChild(edit_form);
@@ -174,14 +167,14 @@ $html = <<<EOT
 
             let elem = document.createElement("div");
             elem.setAttribute("class", "divTableCell");
-            elem.setAttribute("id", String("project"+i));
+            elem.setAttribute("id", String("clientId"+i));
             elem.setAttribute("style", "display:none;");
-            elem.innerText = String(project_id[i]);
+            elem.innerText = String(clients_id[i]);
             new_row.appendChild(elem);
-
             table.appendChild(new_row);
         }
     </script>
+    <script src="/js/clients.js"></script>
 </html>
 EOT;
 echo $html;

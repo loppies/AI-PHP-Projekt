@@ -27,6 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   elseif ($client_id == "" && $project_name != ""){
     $do_function = ProjectRepository::addProject($userID, $project_name);
   }
+  
+  if (isset($_POST['delete_submit'])){
+  $projectId = intval($_POST["delete_id"]);
+  ProjectRepository::deleteProject($projectId);
+  }
 
   $project_id = $_POST["projects_id"];
   $project_new_name = strval($_POST["project_new_name"]);
