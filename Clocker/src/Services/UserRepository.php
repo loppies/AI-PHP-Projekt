@@ -36,6 +36,44 @@ class UserRepository {
     }
 
     /**
+     * @param $userId
+     * @return array|null
+     */
+    public static function getAllUsers($userId) {
+        $user = self::getUser($userId);
+        $is_admin = $user->getIsAdmin();
+        if (!$is_admin){
+            return null;
+        }
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT * FROM users";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $rows = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$rows) {
+            return null;
+        }
+
+        $users = [];
+        foreach ($rows as $row) {
+            $user = new User();
+            $user
+                ->setId($row['id'])
+                ->setLogin($row['login'])
+                ->setPassword($row['password'])
+                ->setEmail($row['email'])
+                ->setIsAdmin($row['is_admin']);
+            $users[] = $user;
+        }
+
+        return $users;
+    }
+
+    /**
      * @param $userLogin
      * @return User|null
      */
@@ -111,6 +149,33 @@ class UserRepository {
         }
 
         return $count["counter"];
+    }
+
+    /**
+     * @param $userId
+     * @param $userNewRole
+     * @return User|null
+     */
+    public static function changeUserRole($userId, $userToChangeId, $userNewRole) {
+        $user = self::getUser($userId);
+        $is_admin = $user->getIsAdmin();
+        if (!$is_admin){
+            return null;
+        }
+
+        $pdo = PdoConnection::getPdoConnection();
+        $sql = "UPDATE users SET is_admin = :user_new_role WHERE id = :user_id;";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( [
+            ':user_id' => $userToChangeId,
+            ':user_new_role' => $userNewRole
+        ] );
+
+        PdoConnection::closePdoConnection($pdo);
+
+        $user = self::getUser($userToChangeId);
+
+        return $user;
     }
 
     /**

@@ -7,6 +7,7 @@ class Project {
     protected $name;
     protected $clientId;
     protected $userId;
+    protected $rate;
 
     /**
      * @return mixed
@@ -78,6 +79,24 @@ class Project {
     {
         $this->userId = $userId;
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * @param $rate
+     * @return Project
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+        $this;
     }
 }
 

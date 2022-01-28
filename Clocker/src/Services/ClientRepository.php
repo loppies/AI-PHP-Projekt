@@ -123,7 +123,7 @@ class ClientRepository {
     public static function countClient() {
         $pdo = PdoConnection::getPdoConnection();
 
-        $sql = "SELECT count(*) as counter FROM tasks";
+        $sql = "SELECT count(*) as counter FROM clients";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute();
         $count = $stm->fetch(PDO::FETCH_ASSOC);
