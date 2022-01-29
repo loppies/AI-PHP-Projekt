@@ -37,7 +37,8 @@ class TaskRepository {
                 ->setProjectId($row['project_id'])
                 ->setName($row['name'])
                 ->setStart($row['start'])
-                ->setStop($row['stop']);
+                ->setStop($row['stop'])
+                ->setRate($row['rate']);
 
             $tasks[] = $task;
         }
@@ -70,7 +71,8 @@ class TaskRepository {
             ->setProjectId($row['project_id'])
             ->setName($row['name'])
             ->setStart($row['start'])
-            ->setStop($row['stop']);
+            ->setStop($row['stop'])
+            ->setRate($row['rate']);
 
         return $task;
     }
@@ -78,18 +80,20 @@ class TaskRepository {
     /**
      * @param $userId
      * @param $taskName
-     * @param $projectId
+     * @param null $projectId
+     * @param null $rate
      * @return Task|null
      */
-    public static function addTask($userId, $taskName, $projectId = NULL) {
+    public static function addTask($userId, $taskName, $projectId = NULL, $rate = NULL) {
         $pdo = PdoConnection::getPdoConnection();
 
-        $sql = "INSERT INTO tasks (user_id, project_id, name, start) VALUES (:user_id, :project_id, :name, NOW())";
+        $sql = "INSERT INTO tasks (user_id, project_id, name, start, rate) VALUES (:user_id, :project_id, :name, NOW(), :rate)";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute([
             ':user_id' => $userId,
             ':project_id' => $projectId,
-            ':name' => $taskName
+            ':name' => $taskName,
+            ':rate' => $rate
         ]);
 
         $task = self::getTask($pdo->lastInsertId());
@@ -150,12 +154,34 @@ class TaskRepository {
      * @param $taskId
      * @return Task|null
      */
-public static function updateTaskStopTime($taskId) {
+    public static function updateTaskStopTime($taskId) {
         $pdo = PdoConnection::getPdoConnection();
 
         $sql = "UPDATE tasks SET stop = NOW() WHERE id = :task_id";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute( [
+            ':task_id' => $taskId
+        ] );
+
+        $task = self::getTask($taskId);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        return $task;
+    }
+
+    /**
+     * @param $taskId
+     * @param $taskRate
+     * @return Task|null
+     */
+    public static function updateTaskRate($taskId, $taskRate) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "UPDATE tasks SET rate = :rate WHERE id = :task_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( [
+            ':rate' => $taskRate,
             ':task_id' => $taskId
         ] );
 
@@ -192,7 +218,8 @@ public static function updateTaskStopTime($taskId) {
                 ->setProjectId($row['project_id'])
                 ->setName($row['name'])
                 ->setStart($row['start'])
-                ->setStop($row['stop']);
+                ->setStop($row['stop'])
+                ->setRate($row['rate']);
 
             $tasks[] = $task;
         }

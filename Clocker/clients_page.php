@@ -142,13 +142,13 @@ $html = <<<EOT
             let trash_button = document.createElement("button");
             trash_button.setAttribute("class", "deleteButt");
             trash_button.setAttribute("id", String("trash"+i));
-            trash_button.addEventListener("click", deleteClientFunction);
             let trash_img = document.createElement("img");
             trash_img.setAttribute("class", "deletIcon");
             trash_img.setAttribute("src", "img/delete.png");
             trash_button.appendChild(trash_img);
             trash_elem.appendChild(trash_button);
             new_row.appendChild(trash_elem);
+
             let edit_elem = document.createElement("div");
             edit_elem.setAttribute("class", "divTableCell");
             let edit_button = document.createElement("button");
@@ -164,6 +164,7 @@ $html = <<<EOT
             edit_form.appendChild(edit_button);
             edit_elem.appendChild(edit_form);
             new_row.appendChild(edit_elem);
+
             let elem = document.createElement("div");
             elem.setAttribute("class", "divTableCell");
             elem.setAttribute("id", String("clientId"+i));
@@ -172,16 +173,8 @@ $html = <<<EOT
             new_row.appendChild(elem);
             table.appendChild(new_row);
         }
-        function deleteClientFunction() {
-            var id = this.id.slice(-1);
-            var clientId = document.getElementById('clientId' + id);
-            clientId = clientId.innerHTML;
-            var delete_id = document.getElementById('delete_id');
-            document.getElementById('delete_id').value = clientId;
-            document.getElementById('delete_submit').click();
-            }
     </script>
-    <script src="/js/projects.js"></script>
+    <script src="/js/clients.js"></script>
 </html>
 EOT;
 echo $html;

@@ -1,4 +1,4 @@
 <?php
 
 namespace Clocker\Controllers;
-header("Location: /admin_task_page.php");
+header("Location: /tasks_page.php");

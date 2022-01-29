@@ -32,7 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   elseif (isset($_POST['edit_submit'])){
     $taskId = intval($_POST["edit_id"]);
     $taskName = $_POST["edit_name"];
+    $stawka = $_POST["edit_stawka"];
     $editTask = TaskRepository::updateTaskName($taskId,$taskName);
+    $currTask = TaskRepository::getTask($taskId);
+    if ($currTask->getStop() != null){
+     TaskRepository::updateTaskRate($taskId,$stawka);
+    }
   }
   elseif (isset($_POST['delete_submit'])){
   $taskId = intval($_POST["delete_id"]);

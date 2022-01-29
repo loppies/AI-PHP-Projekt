@@ -9,6 +9,11 @@ use Clocker\Services\ProjectRepository;
 use Clocker\Services\UserRepository;
 
 session_start();
+if (!isset($_SESSION['user_login'])) {
+ header("Location: /home_page.php");
+}
+
+
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_login'];
 
@@ -20,13 +25,14 @@ $tasks = TaskRepository::getAllTasks($user_id);
 
 $counter = 0;
 $project_id = array();
-
 $project_name = array();
-
 $name = array();
 $start = array();
 $stop = array();
 $task_id = array();
+// ---------------------
+$stawka = array();
+// ---------------------
 if ($tasks != NULL){
 foreach ($tasks as $row)
 {
@@ -37,6 +43,9 @@ foreach ($tasks as $row)
     $start[] = $row->getStart();
     $stop[] = $row->getStop();
     $task_id[] = $row->getId();
+    // ---------------------
+    $stawka[] = $row->getRate();
+    // ---------------------
     $one_project= ProjectRepository::getProject($one_project_id);
     if ($one_project == null){
       $project_name[] = "";
@@ -53,6 +62,9 @@ $start_json = json_encode($start);
 $stop_json = json_encode($stop);
 $task_id_json = json_encode($task_id);
 $project_names_json = json_encode($project_name);
+// ---------------------
+$stawka_json = json_encode($stawka);
+// ---------------------
 
 $html = <<<EOT
 
@@ -83,6 +95,9 @@ $html = <<<EOT
         var stops = JSON.parse('$stop_json');
         var tasks_id = JSON.parse('$task_id_json');
         var projects_name = JSON.parse('$project_names_json');
+        
+        var stawki = JSON.parse('$stawka_json');
+
         var table = document.getElementById('divTableBody');
 
         for (var i = 0; i < $counter; i++) {
@@ -183,13 +198,29 @@ $html = <<<EOT
           
           var newDivStawka = document.createElement('div');
           newDivStawka.className = "divTableCell";
-          var newButtonStawka = document.createElement('button');
-          newButtonStawka.className = "stawkaButt";
-          //newButtonStawka.addEventListener("click", dodajStawke);
-          newButtonStawka.id = "stawkaBtn" + i;
-          newButtonStawka.innerHTML = "Dodaj stawke";
-          newDivStawka.appendChild(newButtonStawka);
+          newDivStawka.id = "divStawka" + i;
+
+          
+          if (stawki[i] != null) {
+            newDivStawka.innerHTML = stawki[i];
+          }
+          else {
+            newDivStawka.innerHTML = "stawka";
+          }
           newTableRow.appendChild(newDivStawka);
+          table.append(newTableRow);
+          
+          var newDivWynagrodzenie = document.createElement('div');
+          newDivWynagrodzenie.className = "divTableCell";
+          newDivWynagrodzenie.id = "newDivWynagrodzenie" + i;
+          var wypelnionaStawka = document.getElementById('divStawka'+i);
+          if (wypelnionaStawka.innerHTML != "stawka"){
+          newDivWynagrodzenie.innerHTML = parseFloat((diffTime*wypelnionaStawka.innerHTML)/3600).toFixed(2) + " zl";
+          }
+          else {
+          newDivWynagrodzenie.innerHTML = "wynagrodzenie";
+          }
+          newTableRow.appendChild(newDivWynagrodzenie);
           table.append(newTableRow);
 
           var newDivTaskId = document.createElement('div');
@@ -202,7 +233,7 @@ $html = <<<EOT
         }
         
         var timeEnd = document.getElementsByClassName('divStop');
-        if (timeEnd[timeEnd.length - 1].innerHTML == "----") {
+        if (timeEnd.length != 0 && timeEnd[timeEnd.length - 1].innerHTML == "----" ) {
           start();
         }
         
@@ -214,7 +245,14 @@ $html = <<<EOT
   <img class='profil' src="/img/profile.png">
   <p id='user_name'>User</p>
   </div>
-  <div class="logB1"><button class="logButt" onclick="wyloguj()">Wyloguj się</button></div>
+  
+  <div class="logB1">
+  <form method="POST" action="/src/Controllers/LogOut.php">
+  <button class="logButt">Wyloguj się</button>
+  </form>
+  </div>
+  
+  
   <div class="lista">
     <ul>
 <li>
@@ -262,22 +300,25 @@ $html = <<<EOT
   </div>
   <div class="divTable">
     <div class="divTableBody" id="divTableBody">
-      <div class="divTableRow" id="firstDiv">
+      <div class="divTableRow header" id="firstDiv">
         <div class="divTableCell lp" >&nbsp;Lp</div>
         <div class="divTableCell nazwa">&nbsp;Nazwa</div>
-        <div class="divTableCell id_projektu">&nbsp;Id projektu</div>
+        <div class="divTableCell id_projektu">&nbsp;Projekt</div>
         <div class="divTableCell start">&nbsp;Czas rozpoczęcia</div>
         <div class="divTableCell stop">&nbsp;Czas zakończenia</div>
         <div class="divTableCell time">&nbsp;Laczny czas</div>
         <div class="divTableCell delete">&nbsp;Usuń</div>
         <div class="divTableCell edit">&nbsp;Edytuj</div>
-        <div class="divTableCell stawka" >&nbsp;Stawka</div>
+        <div class="divTableCell stawka" >&nbsp;Stawka (zl/h)</div>
         <div class="divTableCell wynagrodzenie" >&nbsp;Wynagrodzenie</div>
         <div class="divTableCell task_id" style="display: none">&nbsp;Task id</div>
         
         <form method="POST" action="/src/Controllers/TaskController.php">
         <input type="hidden" id="edit_id" name="edit_id"></input>
         <input type="hidden" id="edit_name" name="edit_name"></input>
+        
+        <input type="hidden" id="edit_stawka" name="edit_stawka"></input>
+        
         <button hidden id="edit_submit" name="edit_submit">Potwierdz</button>
         </form>
         

@@ -25,6 +25,7 @@ function timer() {
 }
 
 
+
 function start() {
   pause();
   cron = setInterval(() => {
@@ -112,7 +113,7 @@ function login() {
 }
 
 function addTaskFunction() {
-  taskname = document.getElementById('taskname').value;
+  var taskname = document.getElementById('taskName').value;
   if (taskname.length == 0) {
     alert("Nazwa zadania nie moze byc pusta!");
     return false;
@@ -129,24 +130,56 @@ function endTaskFunction() {
 }
 
 function deleteTaskFunction() {
-  var id = this.id.slice(-1);
-  var taskId = document.getElementById('divTaskId' + id);
-  taskId = taskId.innerHTML;
-  document.getElementById('delete_id').value = taskId;
-  document.getElementById('delete_submit').click();
+  let bar = confirm(`Czy napewno chcesz usunąć to zadanie?`);
+  if (bar == true) {
+    let new_id = NaN;
+    let iterator = 1;
+    while (isNaN(new_id)) {
+      new_id = parseInt(this.id.slice(-(this.id.length - iterator)));
+      iterator += 1;
+    }
+    var taskId = document.getElementById('divTaskId' + new_id);
+    taskId = taskId.innerHTML;
+    document.getElementById('delete_id').value = taskId;
+    document.getElementById('delete_submit').click();
+  }
 }
 
+function getTime(id) {
+  let start = document.getElementById('divStart' + id);
+  let stop = document.getElementById('divStop' + id);
+  startDate = new Date(start.innerHTML);
+  stopDate = new Date(stop.innerHTML);
+  if (stop.innerHTML != "----") {
+    var diffTime = (Math.abs(stopDate - startDate)) / 1000;
+    return diffTime;
+  }
+  return false;
 
-function getCopy(id) {
+}
+
+function getCopyName(id) {
   var taskNameCopy = document.getElementById('divNazwa' + id);
   return taskNameCopy.innerHTML;
 }
 
+function getCopyStawka(id) {
+  var taskStawkaCopy = document.getElementById('divStawka' + id);
+  return taskStawkaCopy.innerHTML;
+}
+
 function editTaskFunction() {
-  var id = this.id.slice(-1);
-  var taskId = document.getElementById('divTaskId' + id);
-  var taskName = document.getElementById('divNazwa' + id);
-  var taskNameCopy = getCopy(id);
+  let new_id = NaN;
+  let iterator = 1;
+  while (isNaN(new_id)) {
+    new_id = parseInt(this.id.slice(-(this.id.length - iterator)));
+    iterator += 1;
+  }
+  var taskId = document.getElementById('divTaskId' + new_id);
+  var taskName = document.getElementById('divNazwa' + new_id);
+  var taskNameCopy = getCopyName(new_id);
+  var taskStawka = document.getElementById('divStawka' + new_id);
+  var taskStawkaCopy = getCopyStawka(new_id);
   var editButtons = document.getElementsByClassName("editClass");
   for (var i = 0; i < editButtons.length; i++) {
     editButtons[i].disabled = true;
@@ -154,21 +187,63 @@ function editTaskFunction() {
   taskId = taskId.innerHTML;
   taskName.contentEditable = "true";
   taskName.style.fontWeight = "bold";
+  taskStawka.contentEditable = "true";
+  taskStawka.style.fontWeight = "bold";
+  let timeWynagrodzenie = getTime(new_id);
   document.getElementById('edit_id').value = taskId;
   taskName.addEventListener('dblclick', function () {
     taskName.contentEditable = "false";
     taskName.style.fontWeight = "normal";
-    taskName = document.getElementById('divNazwa' + id);
+    taskName = document.getElementById('divNazwa' + new_id);
     if (taskName.innerHTML.length != 0) {
+      if (taskStawka.innerHTML.length != 0 && !isNaN(taskStawka.innerHTML)) {
+        document.getElementById('edit_stawka').value = taskStawka.innerHTML;
+      }
+      if (taskStawka.innerHTML.length == 0 || isNaN(taskStawka.innerHTML)) {
+        document.getElementById('edit_stawka').value = taskStawkaCopy;
+      }
       document.getElementById('edit_name').value = taskName.innerHTML;
       document.getElementById('edit_submit').click();
     }
     if (taskName.innerHTML.length == 0) {
+      if (taskStawka.innerHTML.length != 0 && !isNaN(taskStawka.innerHTML)) {
+        document.getElementById('edit_stawka').value = taskStawka.innerHTML;
+      }
+      if (taskStawka.innerHTML.length == 0 || isNaN(taskStawka.innerHTML)) {
+        document.getElementById('edit_stawka').value = taskStawkaCopy;
+      }
       document.getElementById('edit_name').value = taskNameCopy;
       document.getElementById('edit_submit').click();
     }
   })
 
+  taskStawka.addEventListener('dblclick', function () {
+    taskStawka.contentEditable = "false";
+    taskStawka.style.fontWeight = "normal";
+    taskStawka = document.getElementById('divStawka' + new_id);
+    if (taskStawka.innerHTML.length != 0 && !isNaN(taskStawka.innerHTML)) {
+      console.log("liczba");
+      if (taskName.innerHTML.length == 0) {
+        document.getElementById('edit_name').value = taskNameCopy;
+      }
+      if (taskName.innerHTML.length != 0) {
+        document.getElementById('edit_name').value = taskName.innerHTML;
+      }
+      document.getElementById('edit_stawka').value = taskStawka.innerHTML;
+      document.getElementById('edit_submit').click();
+    }
+    if (taskStawka.innerHTML.length == 0 || isNaN(taskStawka.innerHTML)) {
+      console.log("nie liczba");
+      if (taskName.innerHTML.length == 0) {
+        document.getElementById('edit_name').value = taskNameCopy;
+      }
+      if (taskName.innerHTML.length != 0) {
+        document.getElementById('edit_name').value = taskName.innerHTML;
+      }
+      document.getElementById('edit_stawka').value = taskStawkaCopy;
+      document.getElementById('edit_submit').click();
+    }
+  })
 }
 
 

@@ -1,6 +1,12 @@
 function edit(curr_id) {
   let flag = 0;
-  curr_id = curr_id[curr_id.length - 1];
+  let iterator = 1;
+  let new_id = NaN;
+  while (isNaN(new_id)){
+    new_id = parseInt(curr_id.slice(-(curr_id.length - iterator)));
+    iterator += 1;
+  }
+  curr_id = new_id;
   name_field = document.getElementById("nazwa" + curr_id);
   let new_name = prompt(`Wpisz nową nazwę projektu dla ${name_field.innerText}`);
   var value = select.options[select.selectedIndex].value;
@@ -139,24 +145,20 @@ function searchProjects() {
   }
 }
 
-
-
 function deleteProjectFunction() {
-  var id = this.id.slice(-1);
-  var projectId = document.getElementById('project' + id);
-  projectId = projectId.innerHTML;
-  var delete_id = document.getElementById('delete_id');
-  document.getElementById('delete_id').value = projectId;
-  document.getElementById('delete_submit').click();
-}
-
-function deleteClientFunction() {
-  var id = this.id.slice(-1);
-  var clientId = document.getElementById('clientId' + id);
-  clientId = projectId.innerHTML;
-  var delete_id = document.getElementById('delete_id');
-  document.getElementById('delete_id').value = clientId;
-  document.getElementById('delete_submit').click();
+  let bar = confirm(`Czy napewno chcesz usunąć ten projekt?`);
+  if (bar == true){
+    let new_id = NaN;
+    let iterator = 1;
+    while (isNaN(new_id)){
+      new_id = parseInt(this.id.slice(-(this.id.length - iterator)));
+      iterator += 1;
+    }
+    var projectId = document.getElementById('project' + new_id);
+    projectId = projectId.innerHTML;
+    document.getElementById('delete_id').value = projectId;
+    document.getElementById('delete_submit').click();
+  }
 }
 
 function submit() {
@@ -179,4 +181,9 @@ function submit() {
 let edit_buts = document.getElementsByClassName("editButt IconDelete");
 for (let i = 0; i < edit_buts.length; i++) {
   edit_buts[i].setAttribute("onclick", "edit(this.id)");
+}
+
+let delete_buts = document.getElementsByClassName("deleteButt");
+for (let i = 0; i < delete_buts.length; i++) {
+    delete_buts[i].addEventListener("click", deleteProjectFunction);
 }
