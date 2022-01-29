@@ -66,6 +66,28 @@ label{
     width: 80px; 
     float: left;
 } 
+.users_stat{
+    color:#2d2d2d; 
+    font-size: 22px; 
+    font-family:'Roboto Condensed', sans-serif;
+}
+.tasks_stat{
+    color:#2d2d2d; 
+    font-size: 22px; 
+    font-family:'Roboto Condensed', sans-serif;
+}
+
+.projects_stat{
+    color:#2d2d2d; 
+    font-size: 22px; 
+    font-family:'Roboto Condensed', sans-serif;
+}
+
+.clients_stat{
+    color:#2d2d2d; 
+    font-size: 22px; 
+    font-family:'Roboto Condensed', sans-serif;
+}
 
 #logButton{
     height: 50px;
