@@ -33,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             session_start();
             $_SESSION['user_login'] = $user->getLogin();
         }
-
-        header("Location: /user_page.php");
+        header("Location: /tasks_page.php");
     }
 }

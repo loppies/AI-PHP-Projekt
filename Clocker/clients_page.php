@@ -11,6 +11,9 @@ use Clocker\Services\ClientRepository;
 use Clocker\Services\TaskRepository;
 
 session_start();
+if (!isset($_SESSION['user_login'])){
+    header("Location: /home_page.php");
+}
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_login'];
 $clients = ClientRepository::getAllClients($user_id);
@@ -51,7 +54,11 @@ $html = <<<EOT
         <div class="container">
             <div class="logo">CLOCKER</div>
             <div class="name"><img  class = 'profil' src="img/profile.png">$user_name</div>
-            <div class="logB1"><button class="logButt">Wyloguj się</button></div>
+            <div class="logB1">
+                <form method="POST" action="/src/Controllers/LogOut.php">
+                    <button class="logButt">Wyloguj się</button>
+                </form>
+            </div>
             <div class="lista"><ul>
                 <li>
                     <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
@@ -69,7 +76,11 @@ $html = <<<EOT
                     </form>
                 </li>
                 <li><button class="listButt raports">Raporty</button></li>
-                <li><button id="adm" class="listButt users" style="display:none;">Użytkownicy</button></li>
+                <li>
+                    <form method="POST" action="/src/Controllers/ChangeSitesAdmin.php" onsubmit="return to_admin()">
+                        <button id="adm" class="listButt users" style="display:none;">Użytkownicy</button>
+                    </form>
+                </li>
             </ul></div>
             <div class="tabela">
                 <input id="searchbar" type="text" name="search" placeholder="Szukaj.." onkeyup="searchProjects()">

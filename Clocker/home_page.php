@@ -84,9 +84,6 @@ $html = <<<EOT
             
         </div>
     </div>
-    <div id="desc">
-        <span id = 'descSpan'>Clocker to...</span>
-    </div>
 </body>
 </html>
 

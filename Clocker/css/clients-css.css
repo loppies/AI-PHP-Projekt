@@ -42,7 +42,7 @@ body {
   font-size: 50px;
   text-shadow: 2px 2px 0 #ffffff;
   background-size: cover;
-  background-image: url('back.png');
+  background-image: url('/img/back.png');
   background-size: cover;
   background-position: initial;
 }

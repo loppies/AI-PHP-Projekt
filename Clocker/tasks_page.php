@@ -9,6 +9,9 @@ use Clocker\Services\ProjectRepository;
 use Clocker\Services\UserRepository;
 
 session_start();
+if (!isset($_SESSION['user_login'])){
+  header("Location: /home_page.php");
+}
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_login'];
 
@@ -214,26 +217,34 @@ $html = <<<EOT
   <img class='profil' src="/img/profile.png">
   <p id='user_name'>User</p>
   </div>
-  <div class="logB1"><button class="logButt" onclick="wyloguj()">Wyloguj się</button></div>
+  <div class="logB1">
+    <form method="POST" action="/src/Controllers/LogOut.php">
+        <button class="logButt">Wyloguj się</button>
+    </form>
+  </div>
   <div class="lista">
     <ul>
-<li>
-<form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
-    <button class="listButt projects">Projekty</button>
-</form>
-</li>
-<li>
-<form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
-    <button class="listButt tasks">Zadania</button>
-</form>
-</li>
-<li>
-<form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
-    <button class="listButt clients">Klienci</button>
-</form>
-</li>
-<li><button class="listButt raports">Raporty</button></li>
-<li><button id="adm" class="listButt users" style="display:none;">Użytkownicy</button></li>
+    <li>
+        <form method="POST" action="/src/Controllers/ChangeSitesProjects.php" onsubmit="return to_projects()">
+            <button class="listButt projects">Projekty</button>
+        </form>
+    </li>
+    <li>
+        <form method="POST" action="/src/Controllers/ChangeSitesTasks.php" onsubmit="return to_tasks()">
+            <button class="listButt tasks">Zadania</button>
+        </form>
+    </li>
+    <li>
+        <form method="POST" action="/src/Controllers/ChangeSitesClients.php" onsubmit="return to_clients()">
+            <button class="listButt clients">Klienci</button>
+        </form>
+    </li>
+    <li><button class="listButt raports">Raporty</button></li>
+    <li>
+        <form method="POST" action="/src/Controllers/ChangeSitesAdmin.php" onsubmit="return to_admin()">
+            <button id="adm" class="listButt users" style="display:none;">Użytkownicy</button>
+        </form>
+    </li>
     </ul>
   </div>
   <div class="tabela">
