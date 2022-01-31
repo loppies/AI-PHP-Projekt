@@ -188,7 +188,11 @@ $html = <<<EOT
                         <button class="listButt clients">Klienci</button>
                     </form>
                 </li>
-                <li><button class="listButt raports">Raporty</button></li>
+            <li>
+                <form method="POST" action="/src/Controllers/ChangeSitesReports.php" onsubmit="return to_clients()">
+                    <button class="listButt clients">Raport</button>
+                </form>
+            </li>
 </ul>
 </div>
 <div class="tabela">

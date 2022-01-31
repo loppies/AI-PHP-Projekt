@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //        } else {
 //            header("Location: /user_page.php");
 //        }
-
-        if ($user->getIsAdmin() == true) {
+      
+              if ($user->getIsAdmin() == true) {
             header("Location: /tasks_page.php");
         } else {
             header("Location: /tasks_page.php");

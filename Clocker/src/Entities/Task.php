@@ -9,6 +9,7 @@ class Task {
     protected $name;
     protected $start;
     protected $stop;
+    protected $rate;
 
     /**
      * @return mixed
@@ -115,6 +116,24 @@ class Task {
     public function setProjectId($projectId)
     {
         $this->projectId = $projectId;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * @param $rate
+     * @return $this
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
         return $this;
     }
 }

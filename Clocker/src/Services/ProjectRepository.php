@@ -34,7 +34,8 @@ class ProjectRepository {
                 ->setId($row['id'])
                 ->setClientId($row['client_id'])
                 ->setUserId($row['user_id'])
-                ->setName($row['name']);
+                ->setName($row['name'])
+                ->setRate($row['rate']);
 
             $projects[] = $project;
         }
@@ -65,7 +66,8 @@ class ProjectRepository {
             ->setId($row['id'])
             ->setClientId($row['client_id'])
             ->setUserId($row['user_id'])
-            ->setName($row['name']);
+            ->setName($row['name'])
+            ->setRate($row['rate']);
 
         return $project;
     }
@@ -73,18 +75,20 @@ class ProjectRepository {
     /**
      * @param $userId
      * @param $projectName
-     * @param $clientId
+     * @param null $clientId
+     * @param null $rate
      * @return Project|null
      */
-    public static function addProject($userId, $projectName, $clientId = NULL) {
+    public static function addProject($userId, $projectName, $clientId = NULL, $rate = NULL) {
         $pdo = PdoConnection::getPdoConnection();
 
-        $sql = "INSERT INTO projects (user_id, client_id, name) VALUES (:user_id, :client_id, :name)";
+        $sql = "INSERT INTO projects (user_id, client_id, name, rate) VALUES (:user_id, :client_id, :name, :rate)";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute([
             ':user_id' => $userId,
             ':client_id' => $clientId,
-            ':name' => $projectName
+            ':name' => $projectName,
+            ':rate' => $rate
         ]);
 
         $project = self::getProject($pdo->lastInsertId());
@@ -103,7 +107,6 @@ class ProjectRepository {
         $pdo = PdoConnection::getPdoConnection();
 
         $project = self::getProject($projectId);
-        print_r($project);
 
         $sql = "UPDATE projects SET name = :project_name WHERE id = :project_id";
         $stm = $pdo->prepare($sql);
@@ -128,12 +131,35 @@ class ProjectRepository {
         $pdo = PdoConnection::getPdoConnection();
 
         $project = self::getProject($projectId);
-        print_r($project);
 
         $sql = "UPDATE projects SET client_id = :client_id WHERE id = :project_id";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute( [
             ':client_id' => $clientId,
+            ':project_id' => $projectId
+        ] );
+
+        $project = self::getProject($projectId);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        return $project;
+    }
+
+    /**
+     * @param $projectId
+     * @param $rate
+     * @return Project|null
+     */
+    public static function updateProjectRate($projectId, $rate) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $project = self::getProject($projectId);
+
+        $sql = "UPDATE projects SET rate = :rate WHERE id = :project_id";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( [
+            ':rate' => $rate,
             ':project_id' => $projectId
         ] );
 

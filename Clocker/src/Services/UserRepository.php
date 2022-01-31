@@ -36,6 +36,44 @@ class UserRepository {
     }
 
     /**
+     * @param $userId
+     * @return array|null
+     */
+    public static function getAllUsers($userId) {
+        $user = self::getUser($userId);
+        $is_admin = $user->getIsAdmin();
+        if (!$is_admin){
+            return null;
+        }
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "SELECT * FROM users";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute();
+        $rows = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        PdoConnection::closePdoConnection($pdo);
+
+        if (!$rows) {
+            return null;
+        }
+
+        $users = [];
+        foreach ($rows as $row) {
+            $user = new User();
+            $user
+                ->setId($row['id'])
+                ->setLogin($row['login'])
+                ->setPassword($row['password'])
+                ->setEmail($row['email'])
+                ->setIsAdmin($row['is_admin']);
+            $users[] = $user;
+        }
+
+        return $users;
+    }
+
+    /**
      * @param $userLogin
      * @return User|null
      */
@@ -115,6 +153,33 @@ class UserRepository {
 
     /**
      * @param $userId
+     * @param $userNewRole
+     * @return User|null
+     */
+    public static function changeUserRole($userId, $userToChangeId, $userNewRole) {
+        $user = self::getUser($userId);
+        $is_admin = $user->getIsAdmin();
+        if (!$is_admin){
+            return null;
+        }
+
+        $pdo = PdoConnection::getPdoConnection();
+        $sql = "UPDATE users SET is_admin = :user_new_role WHERE id = :user_id;";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( [
+            ':user_id' => $userToChangeId,
+            ':user_new_role' => $userNewRole
+        ] );
+
+        PdoConnection::closePdoConnection($pdo);
+
+        $user = self::getUser($userToChangeId);
+
+        return $user;
+    }
+
+    /**
+     * @param $userId
      * @return void
      */
     public static function deleteUser($userId) {
@@ -123,6 +188,42 @@ class UserRepository {
         $sql = "DELETE FROM users WHERE id = :user_id";
         $stm = $pdo->prepare($sql);
         $result = $stm->execute( array('user_id' => $userId) );
+
+        PdoConnection::closePdoConnection($pdo);
+    }
+
+    /**
+     * @param $userId
+     * @param $userNewEmail
+     * @return void
+     */
+    public static function changeUserEmail($userId, $userNewEmail) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "UPDATE users SET email = :user_new_email WHERE id = :user_id;";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( [
+            ':user_id' => $userId,
+            ':user_new_email' => $userNewEmail
+        ] );
+
+        PdoConnection::closePdoConnection($pdo);
+    }
+
+    /**
+     * @param $userId
+     * @param $userNewLogin
+     * @return void
+     */
+    public static function changeUserLogin($userId, $userNewLogin) {
+        $pdo = PdoConnection::getPdoConnection();
+
+        $sql = "UPDATE users SET login = :user_new_login WHERE id = :user_id;";
+        $stm = $pdo->prepare($sql);
+        $result = $stm->execute( [
+            ':user_id' => $userId,
+            ':user_new_login' => $userNewLogin
+        ] );
 
         PdoConnection::closePdoConnection($pdo);
     }

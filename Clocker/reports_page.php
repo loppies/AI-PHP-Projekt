@@ -5,10 +5,10 @@ require (__DIR__ . "/src/Services/UserRepository.php");
 require (__DIR__ . "/src/Services/ClientRepository.php");
 //require (__DIR__ . "./ErrorBuilder.php");
 
+use Clocker\Services\ClientRepository;
 use Clocker\Services\TaskRepository;
 use Clocker\Services\ProjectRepository;
 use Clocker\Services\UserRepository;
-use Clocker\Services\ClientRepository;
 
 session_start();
 if (!isset($_SESSION['user_login'])) {
@@ -49,18 +49,18 @@ if ($tasks != NULL){
         // ---------------------
         $one_project= ProjectRepository::getProject($one_project_id);
         if ($one_project == null){
-            $project_name[] = "";
+          $project_name[] = "";
         }
-        else {
-            $project_name[] = $one_project->getName();
+      else {
+        $project_name[] = $one_project->getName();
 
-            $client = ClientRepository::getClient($one_project->getClientId());
-            if ($client != null) {
-                $client_name[$counter - 1] = $client->getName();
-            } else {
-                $client_name[$counter - 1] = "";
-            }
+        $client = ClientRepository::getClient($one_project->getClientId());
+        if ($client != null) {
+            $client_name[$counter - 1] = $client->getName();
+        } else {
+            $client_name[$counter - 1] = "";
         }
+      }
     }
 }
 
@@ -86,18 +86,44 @@ $client_names_json = json_encode($client_name);
 $stawka_json = json_encode($stawka);
 // ---------------------
 
+
+# -- RAPORTY --
+
+$clients = ClientRepository::getAllClients($user_id);
+if ($clients != null){
+    foreach($clients as $client){
+        $user_clients_names[] = $client->getName();
+        $user_clients_id[] = $client->getId();
+    }
+}
+$user_clients_names_json = json_encode($user_clients_names);
+$user_clients_id_json = json_encode($user_clients_id);
+
+$projects = ProjectRepository::getAllProjects($user_id);
+if ($projects != null){
+    foreach($projects as $project){
+        $user_projects_names[] = $project->getName();
+        $user_projects_id[] = $project->getId();
+    }
+}
+$user_projects_names_json = json_encode($user_projects_names);
+$user_projects_id_json = json_encode($user_projects_id);
+
+# --
+
 $html = <<<EOT
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>Clocker</title>
-        <link rel="stylesheet" href="/css/tasks-css.css">
+        <link rel="stylesheet" href="/css/reports-css.css">
         <script src="/js/clocker.js"></script>
     </head>
     <body>
     
-    <script>
+    <script> 
       window.onload = makeDivs;
 
       function makeDivs() {
@@ -115,7 +141,7 @@ $html = <<<EOT
         var tasks_id = JSON.parse('$task_id_json');
         var projects_name = JSON.parse('$project_names_json');
         var clients_name = JSON.parse('$client_names_json');
-
+        
         var stawki = JSON.parse('$stawka_json');
 
         var table = document.getElementById('divTableBody');
@@ -185,42 +211,13 @@ $html = <<<EOT
           var hours = (diffTime / 3600) - (24 * diffDays);
           var minutes = (diffTime / 60) - (1440 * diffDays) - (60 * parseInt(hours));
           var seconds = Math.round((minutes - parseInt(minutes))*60);
-          var result = diffDays + " dni " + parseInt(hours) + " H " + parseInt(minutes) + " m " + parseInt(seconds) + " s";
+          var result = diffDays + " dni " + parseInt(hours) + " H " + parseInt(minutes) + " m " + parseInt(seconds) + " s";   
+          
           newDivTime.innerHTML = result;
           } else {
             newDivTime.innerHTML = "----";
           }
           newTableRow.appendChild(newDivTime);
-          table.append(newTableRow);
-
-
-          var newDivUsun = document.createElement('div');
-          var newButtonUsun = document.createElement('button');
-          var newImgUsun = document.createElement('img');
-          newImgUsun.className = "deletIcon";
-          newImgUsun.src = "/img/delete.png";
-          newDivUsun.id = "divUsun" + i;
-          newDivUsun.className = "divTableCell";
-          newButtonUsun.addEventListener("click", deleteTaskFunction);
-          newButtonUsun.id = "deleteBtn" + i;
-          newButtonUsun.className = "deleteButt";
-          newButtonUsun.appendChild(newImgUsun);
-          newDivUsun.appendChild(newButtonUsun);
-          newTableRow.appendChild(newDivUsun);
-          table.append(newTableRow);
-
-          var newDivEdytuj = document.createElement('div');
-          newDivEdytuj.className = "divTableCell";
-          var newImgEdit = document.createElement('img');
-          newImgEdit.src = "/img/edit.png";
-          newDivEdytuj.id = "divEdytuj" + i;
-          var newButtonEdytuj = document.createElement('button');
-          newButtonEdytuj.className = "editClass editButt";
-          newButtonEdytuj.addEventListener("click", editTaskFunction);
-          newButtonEdytuj.id = "editBtn" + i;
-          newButtonEdytuj.appendChild(newImgEdit);
-          newDivEdytuj.appendChild(newButtonEdytuj);
-          newTableRow.appendChild(newDivEdytuj);
           table.append(newTableRow);
           
           var newDivStawka = document.createElement('div');
@@ -242,7 +239,7 @@ $html = <<<EOT
           newDivWynagrodzenie.id = "newDivWynagrodzenie" + i;
           var wypelnionaStawka = document.getElementById('divStawka'+i);
           if (wypelnionaStawka.innerHTML != "00.00"){
-          newDivWynagrodzenie.innerHTML = parseFloat((diffTime*wypelnionaStawka.innerHTML)/3600).toFixed(2) + " zł";
+          newDivWynagrodzenie.innerHTML = parseFloat((diffTime*wypelnionaStawka.innerHTML)/3600).toFixed(2) + " zl";
           }
           else {
           newDivWynagrodzenie.innerHTML = "00.00";
@@ -264,7 +261,7 @@ $html = <<<EOT
           start();
         }
         
-      }
+      }  
     </script>  
 <div class="container">
   <div class="logo">CLOCKER</div>
@@ -307,10 +304,7 @@ $html = <<<EOT
 </form>    </ul>
   </div>
   <div class="tabela">
-    <input id="searchbar" type="text" name="search" placeholder="Szukaj.." onkeyup="search()">
-    <div class="buttony">
-    
-    
+    <div class="buttony"> 
     <form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return endTaskFunction()">
     <input type="hidden" id="seconds_full" name="seconds_full"></input>
     <button name="stopButt" class="stopButt" onclick="reset()"></button>
@@ -324,11 +318,6 @@ $html = <<<EOT
 
     
   <div>
-  <form method="POST">
-      <div id='time'>
-        <span id="hour">00</span>:<span id="minute">00</span>:<span id="second">00</span>
-      </div>
-    </form>
   </div>
   <div class="divTable">
     <div class="divTableBody" id="divTableBody">
@@ -337,11 +326,9 @@ $html = <<<EOT
         <div class="divTableCell nazwa">&nbsp;Nazwa</div>
         <div class="divTableCell id_projektu">&nbsp;Projekt</div>
         <div class="divTableCell id_klienta"> Klient</div>
-        <div class="divTableCell start">&nbsp;Czas rozpoczęcia</div>
+        <div class="divTableCell start"> Czas rozpoczęcia</div>
         <div class="divTableCell stop">&nbsp;Czas zakończenia</div>
         <div class="divTableCell time"> Łączny czas</div>
-        <div class="divTableCell delete">&nbsp;Usuń</div>
-        <div class="divTableCell edit">&nbsp;Edytuj</div>
         <div class="divTableCell stawka" >&nbsp;Stawka (zł/h)</div>
         <div class="divTableCell wynagrodzenie" >&nbsp;Wynagrodzenie</div>
         <div class="divTableCell task_id" style="display: none">&nbsp;Task id</div>
@@ -353,31 +340,204 @@ $html = <<<EOT
         <input type="hidden" id="edit_stawka" name="edit_stawka"></input>
         
         <button hidden id="edit_submit" name="edit_submit">Potwierdz</button>
-        </form>
-        
+        </form>                
+                
       </div> 
     </div>
   </div>
 EOT;
-$html2 = <<<EOT
-  </div>
-</div>
-</body>
-</html>
-EOT;
 echo $html;
-echo '<form method="POST" action="/src/Controllers/TaskController.php" onsubmit="return addTaskFunction()">
-      <p class="newTask">Dodaj nowe zadanie</p>
-      <p class="nameTask">Nazwa:<input id="taskAdd" type="text" name="add"></p>
-     ';
+$html2 = <<<EOT
+    <p class="makeRaport">Wygeneruj raport:</p>
+    <div id="div_to_submit_prj" class="chooseProject">Wybierz projekt <select id="select_prj" onchange="selectProject()"><option value="">Wybierz projekt...</option></select> </div>
+    <div id="div_to_submit" class="chooseClient">Wybierz klienta <select id="select" onchange="selectClient()"><option value="">Wybierz klienta...</option></select> </div>
+    <div class="Calendar">
+        <input class="date_control" id="start_date" type="datetime-local" onchange="selectDate()">
+        <input class="date_control" id="stop_date" type="datetime-local" onchange="selectDate()">
+    </div>   
+    <button class="addG" onclick="saveToFile()">Generuj CSV</button>
+ 
+    <script>           
+        function selectClient() {
+           let projectControl = document.getElementById("select_prj");
+           projectControl.value = "";
+           let startDate = document.getElementById("start_date");
+           startDate.value = "";
+           let stopDate = document.getElementById("stop_date");
+           stopDate.value = "";
+           
+           let client = document.getElementById("select").value;
+           
+           let rows = [];      
+           for (let i = 0; i < $counter; i++) {
+               rows.push( document.getElementById('divTableRow' + i ) );
+           }
+           
+           if (client !== "") {
+               for (let i = 0; i < $counter; i++) {             
+                   if ( document.getElementById("divClientId" + i).innerHTML === client ) {
+                        rows[i].style.display = "";
+                   } else {
+                        rows[i].style.display = "none";
+                   }
+               }           
+           } else {
+               for (let i = 0; i < $counter; i++) {
+                    rows[i].style.display = "";
+               } 
+               
+           }
+        }
+        
+        function selectProject() {
+           let clientControl = document.getElementById("select");
+           clientControl.value = "";
+           let startDate = document.getElementById("start_date");
+           startDate.value = "";
+           let stopDate = document.getElementById("stop_date");
+           stopDate.value = "";
+           
+           let project = document.getElementById("select_prj").value;         
+           let rows = [];      
+           for (let i = 0; i < $counter; i++) {
+               rows.push( document.getElementById('divTableRow' + i ) );
+               console.log(rows[i]);
+           }
+                  
+           if (project !== "") {
+               for (let i = 0; i < $counter; i++) {                
+                   if ( document.getElementById("divProjectId" + i).innerHTML === project ) {
+                        rows[i].style.display = "";
+                   } else {
+                        rows[i].style.display = "none";
+                   }
+               }           
+           } else {
+               for (let i = 0; i < $counter; i++) {
+                    rows[i].style.display = "";
+               }           
+           }
+        }
+        
+        function selectDate() {
+            let clientControl = document.getElementById("select");
+            clientControl.value = "";
+            let projectControl = document.getElementById("select_prj");
+            projectControl.value = "";
+           
+            let startDate = document.getElementById("start_date").value;
+            let stopDate = document.getElementById("stop_date").value;
+                        
+            let rows = [];      
+            for (let i = 0; i < $counter; i++) {
+                rows.push( document.getElementById('divTableRow' + i ) );
+            }
+                        
+            if (stopDate === "" && startDate === "") {
+                for (let i = 0; i < $counter; i++) {                         
+                    rows[i].style.display = "";    
+                }
+            }
+            
+            if (startDate !== "" && stopDate === "") {
+                for (let i = 0; i < $counter; i++) {
+                   let date = document.getElementById("divStart" + i).innerHTML;
+                   date = date.replace(" ", "T");
+                   date = date.slice(0, -3);
+                                      
+                   if ( Date.parse(date) >= Date.parse(startDate) ) {
+                        rows[i].style.display = "";
+                   } else {
+                        rows[i].style.display = "none";
+                   }
+                }
+            }
+            
+            if (startDate === ""  && stopDate !== "") {
+                for (let i = 0; i < $counter; i++) {
+                   let date = document.getElementById("divStart" + i).innerHTML;
+                   date = date.replace(" ", "T");
+                   date = date.slice(0, -3);
+                   
+                   if ( Date.parse(date) <= Date.parse(stopDate) ) {
+                        rows[i].style.display = "";
+                   } else {
+                        rows[i].style.display = "none";
+                   }
+                }            
+            }
+            
+            if (startDate !== ""  && stopDate !== "") {
+                for (let i = 0; i < $counter; i++) {
+                   let date = document.getElementById("divStart" + i).innerHTML;
+                   date = date.replace(" ", "T");
+                   date = date.slice(0, -3);
+                   
+                   if ( Date.parse(date) <= Date.parse(stopDate) && Date.parse(date) >= Date.parse(startDate) ) {
+                        rows[i].style.display = "";
+                   } else {
+                        rows[i].style.display = "none";
+                   }
+                }               
+            }
+        }     
+    
+        function saveToFile() {              
+           let rows = [];      
+           for (let i = 0; i < $counter; i++) {
+               rows.push( document.getElementById('divTableRow' + i ) );
+           }
+          
+          const rowsToFile = [
+            ["Lp", "Nazwa", "Projekt", "Klient", "Czas rozpoczecia", "Czas zakonczenia", "Laczny czas", "Stawka (zl/h)", "Wynagrodzenie"],
+          ];
+          
+          for (let i = 0; i < $counter; i++) {                         
+              if (rows[i].style.display === "") {
+                    rowsToFile.push(
+                        [
+                            document.getElementById("divLp" + i).innerHTML,
+                            document.getElementById("divNazwa" + i).innerHTML,
+                            document.getElementById("divProjectId" + i).innerHTML,
+                            document.getElementById("divClientId" + i).innerHTML,
+                            document.getElementById("divStart" + i).innerHTML,
+                            document.getElementById("divStop" + i).innerHTML,
+                            document.getElementById("divTime" + i).innerHTML,
+                            document.getElementById("divStawka" + i).innerHTML,
+                            document.getElementById("newDivWynagrodzenie" + i).innerHTML
+                        ]
+                    );
+              }         
+          }
 
-echo '<p class="chooseProject">Wybierz projekt  <select name="projectID" id="projectID">';
-foreach ($projects as $row){
-    echo '<option value="' . htmlspecialchars($row->getId()) . '">'
-      . htmlspecialchars($row->getName())
-      ;
-}
-echo '<option value="empty">Pusty projekt</option></select></p> <button class="addT" type="submit" id="addTask">Dodaj</button>';
-echo '</form>';
+          let csvContent = "data:text/csv;charset=utf-8," + rowsToFile.map(e => e.join(";")).join("\\r\\n");
+          var encodedUri = encodeURI(csvContent);
+          var link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "my_data.csv");
+          document.body.appendChild(link);
+
+          link.click();
+        }
+   
+        var user_client_names = JSON.parse('$user_clients_names_json');
+        var user_client_id = JSON.parse('$user_clients_id_json');
+        var select = document.getElementById("select");
+        for (let i = 0; i < user_client_names.length; i++){
+            var option = document.createElement("option");
+            option.text = user_client_names[i];
+            select.add(option);
+        }
+        
+        var user_project_names = JSON.parse('$user_projects_names_json');
+        var user_project_id = JSON.parse('$user_projects_id_json');
+        var select_prj = document.getElementById("select_prj");
+        for (let i = 0; i < user_project_names.length; i++){
+            var option = document.createElement("option");
+            option.text = user_project_names[i];
+            select_prj.add(option);
+        }
+    </script>  
+EOT;
 
 echo $html2;

@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ( !isset($_SESSION['user_login']) ) {
             session_start();
             $_SESSION['user_login'] = $user->getLogin();
+            $_SESSION['user_id'] = $user->getId();
         }
-
-        header("Location: /user_page.php");
+        header("Location: /tasks_page.php");
     }
 }
